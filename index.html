@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6757e8">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Mi Día · Planificador</title>
+<style>
+:root{--bg:#f4f6fb;--panel:#fff;--text:#182033;--muted:#7b8498;--line:#e8ebf2;--primary:#6757e8;--primary2:#8b7cf6;--green:#20b486;--danger:#e05260;--shadow:0 14px 40px #26304b12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+body.dark{--bg:#111522;--panel:#1b2131;--text:#f1f4ff;--muted:#9da6bc;--line:#30384d;--shadow:0 14px 40px #0003}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{max-width:1450px;margin:auto;padding:22px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),#a18cff);color:white;border-radius:16px;font-size:25px}.brand h1{font-size:22px;margin:0}.muted{color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 14px;border-radius:12px;background:var(--panel);color:var(--text);border:1px solid var(--line)}.btn.primary{background:var(--primary);color:#fff;border-color:transparent}.btn:hover{filter:brightness(.97)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}.sidebar{padding:20px;height:max-content}.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:800;margin:22px 0 10px}.mini-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mini-calendar button{padding:7px 0;border-radius:9px;background:transparent;color:var(--text);font-size:12px}.mini-calendar button.active{background:var(--primary);color:#fff}.mini-calendar button.today{outline:2px solid var(--primary2)}.weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;color:var(--muted);font-size:11px;text-align:center;margin-bottom:4px}
+.main{min-width:0}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:24px;margin-bottom:18px}.hero h2{margin:0 0 5px;font-size:27px}.clock{text-align:right;font-weight:800;font-size:30px}.date-line{text-transform:capitalize;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{padding:16px 18px}.stat strong{font-size:25px;display:block}.calendar-panel{padding:20px;overflow:hidden}.calendar-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.calendar-head h3{margin:0;font-size:18px}
+.timeline{max-height:none;overflow-x:auto;overflow-y:visible;border:0}
+.day-columns{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:10px;min-width:860px}
+.day-column{min-height:82px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+.day-head{border:0;border-radius:0;background:var(--bg);padding:12px 8px;text-align:center;cursor:pointer;font-size:12px}
+.day-head strong{display:block;font-size:18px;margin-top:3px}
+.day-head.selected{color:var(--primary);background:#8072f012;box-shadow:inset 0 0 0 1px #8072f033}
+.day-events{padding:6px;min-height:18px}
+.day-event-card{display:block;margin:5px 0;padding:9px 10px;border-radius:12px;color:#fff;box-shadow:0 5px 12px #0001;cursor:pointer;font-size:12px}
+.day-event-card strong{display:block;font-size:13px;margin-bottom:3px}
+.day-event-time{font-size:11px;opacity:.95}
+.day-event-notes{font-size:10px;opacity:.86;margin-top:4px}
+.task-panel{position:sticky;top:18px;align-self:start}
+@media(max-width:1000px){.day-columns{min-width:820px}.task-panel{position:static}}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.task-panel,.event-panel{padding:20px}.task-row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.task-row:last-child{border:0}.task-row input{accent-color:var(--green);width:18px;height:18px}.task-row.done .task-name{text-decoration:line-through;color:var(--muted)}.task-name{flex:1}.delete{color:var(--danger);background:transparent;font-size:17px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}.modal{position:fixed;inset:0;background:#11182788;display:none;place-items:center;padding:20px;z-index:20}.modal.open{display:grid}.modal-box{background:var(--panel);border-radius:22px;padding:24px;max-width:560px;width:100%;box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0}.close{background:transparent;color:var(--muted);font-size:24px}.empty{padding:20px;text-align:center;color:var(--muted)}.progress{height:8px;background:var(--line);border-radius:20px;overflow:hidden;margin-top:8px}.progress div{height:100%;background:var(--green);width:0;transition:.2s}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:18px}.sidebar .section-title{margin-top:0}.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.app{padding:12px}.topbar,.hero{flex-direction:column}.clock{text-align:left;font-size:25px}.stats{grid-template-columns:1fr}.sidebar{display:block}.hero h2{font-size:22px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+
+/* --- Pantalla de acceso --- */
+#authScreen{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:50;padding:20px}
+.auth-box{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:30px;max-width:380px;width:100%}
+.auth-box h2{margin:0 0 4px}
+.auth-tabs{display:flex;gap:8px;margin:18px 0}
+.auth-tabs button{flex:1;padding:9px;border-radius:10px;background:var(--bg);color:var(--muted)}
+.auth-tabs button.active{background:var(--primary);color:#fff}
+.auth-box .field{margin-bottom:12px}
+#authError{color:var(--danger);font-size:13px;min-height:18px;margin-top:6px}
+#authMsg{color:var(--green);font-size:13px;min-height:18px;margin-top:6px}
+.sync-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 11px;border-radius:99px;background:var(--bg);border:1px solid var(--line)}
+.sync-pill .dot{width:8px;height:8px;border-radius:99px;background:var(--green)}
+.sync-pill.offline .dot{background:var(--danger)}
+#offlineBanner{display:none;background:#e0526022;border:1px solid var(--danger);color:var(--danger);padding:10px 16px;border-radius:12px;margin-bottom:16px;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- Pantalla de acceso: login / registro con Supabase -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="logo" style="margin-bottom:14px">✦</div>
+    <h2 id="authTitle">Iniciar sesión</h2>
+    <p class="muted" style="font-size:13px;margin-top:2px">Accede para sincronizar tu agenda entre el portátil y el móvil.</p>
+    <div class="auth-tabs">
+      <button id="tabLogin" class="active">Entrar</button>
+      <button id="tabSignup">Crear cuenta</button>
+    </div>
+    <form id="authForm">
+      <div class="field"><label>Correo electrónico</label><input type="email" id="authEmail" required placeholder="tucorreo@ejemplo.com"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="authPassword" required minlength="6" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn primary" style="width:100%" id="authSubmit">Entrar</button>
+    </form>
+    <div id="authError"></div>
+    <div id="authMsg"></div>
+  </div>
+</div>
+
+<div class="app" id="mainApp" style="display:none">
+<header class="topbar">
+  <div class="brand"><div class="logo">✦</div><div><h1>Mi Día</h1><div class="muted">Organiza tu tiempo, cuida tu energía.</div></div></div>
+  <div class="actions">
+<span class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncLabel">Sincronizado</span></span>
+<button class="btn" id="themeBtn">☾ Tema</button>
+<button class="btn" id="exportBtn">⇩ Copia de seguridad</button>
+<button class="btn" id="logoutBtn">Salir (<span id="userEmail"></span>)</button>
+<button class="btn primary" id="newEventBtn">＋ Evento</button>
+</div>
+</header>
+
+<div id="offlineBanner">⚠️ Sin conexión. Mostrando la última versión sincronizada — los cambios no se guardarán hasta que vuelvas a tener internet.</div>
+
+<div class="layout">
+<aside class="sidebar panel">
+  <div class="section-title">Calendario</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><button class="btn" id="prevMonth">‹</button><strong id="monthLabel"></strong><button class="btn" id="nextMonth">›</button></div>
+  <div class="weekdays"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div><div class="mini-calendar" id="miniCalendar"></div>
+  <div class="section-title">Atajos</div>
+  <button class="btn" style="width:100%" id="todayBtn">↺ Volver a hoy</button>
+  <div class="section-title">Sincronización</div>
+<p class="muted" style="font-size:13px">Tus eventos y tareas se guardan en la nube y aparecen al instante en cualquier dispositivo donde inicies sesión con esta misma cuenta.</p>
+<div class="section-title">Consejo del día</div><p class="muted" style="font-size:13px">Planifica lo importante primero. Deja espacio para imprevistos y descansos.</p>
+</aside>
+<main class="main">
+<section class="hero panel">
+ <div><div class="date-line" id="selectedDateLabel"></div><h2 id="greeting">Buenos días 👋</h2><div class="muted">Un pequeño paso cada día.</div></div>
+ <div><div class="clock" id="clock">--:--:--</div><div class="muted" style="text-align:right">🇪🇸 España · Madrid</div></div>
+</section>
+<section class="stats">
+ <div class="stat panel"><span class="muted">Eventos del día</span><strong id="eventCount">0</strong><span class="muted">en tu agenda</span></div>
+ <div class="stat panel"><span class="muted">Tareas completadas</span><strong id="doneCount">0/0</strong><div class="progress"><div id="progressBar"></div></div></div>
+ <div class="stat panel"><span class="muted">Próximo evento</span><strong id="nextEvent" style="font-size:17px">—</strong><span class="muted" id="nextTime">Sin eventos pendientes</span></div>
+</section>
+<section class="calendar-panel panel">
+ <div class="calendar-head"><h3>Tu semana</h3><div class="actions"><button class="btn" id="prevWeek">‹</button><button class="btn" id="weekToday">Hoy</button><button class="btn" id="nextWeek">›</button></div></div>
+ <div class="timeline"><div class="day-columns" id="calendarGrid"></div></div>
+</section>
+<div class="bottom-grid">
+<section class="task-panel panel"><div class="calendar-head"><div><h3 style="margin-bottom:2px">✓ Tareas diarias</h3><div class="muted" style="font-size:12px" id="taskDateLabel"></div></div><button class="btn primary" id="newTaskBtn">＋ Tarea</button></div><div id="tasks"></div></section>
+<section class="event-panel panel"><div class="calendar-head"><h3>Agenda del día</h3><button class="btn" id="filterAllBtn">Ver todo</button></div><div id="dayEvents"></div></section>
+</div>
+</main></div></div>
+
+<div class="modal" id="eventModal"><div class="modal-box">
+<div class="modal-head"><h3 id="eventModalTitle">Nuevo evento</h3><button class="close" data-close>×</button></div>
+<form id="eventForm"><input type="hidden" id="eventId"><div class="form-grid">
+<div class="field full"><label>Título</label><input id="eventTitle" required placeholder="Ej. Estudiar, gimnasio, reunión..."></div>
+<div class="field"><label>Fecha</label><input type="date" id="eventDate" required></div><div class="field"><label>Color</label><input type="color" id="eventColor" value="#6757e8"></div>
+<div class="field"><label>Desde</label><input type="time" id="eventStart" required value="09:00"></div><div class="field"><label>Hasta</label><input type="time" id="eventEnd" required value="10:00"></div>
+<div class="field full"><label>Notas</label><textarea id="eventNotes" rows="3" placeholder="Detalles opcionales..."></textarea></div>
+</div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Guardar evento</button></div></form>
+</div></div>
+
+<div class="modal" id="taskModal"><div class="modal-box">
+<div class="modal-head"><h3>Nueva tarea diaria</h3><button class="close" data-close>×</button></div>
+<form id="taskForm"><div class="form-grid"><div class="field full"><label>Tarea diaria recurrente</label><input id="taskTitle" required placeholder="Ej. Beber agua, leer, ordenar..."></div><div class="field full"><label>Prioridad</label><select id="taskPriority"><option value="normal">Normal</option><option value="alta">Alta</option><option value="baja">Baja</option></select></div></div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Guardar tarea</button></div></form>
+</div></div>
+
+<!-- Cliente de Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+/* ==========================================================
+   CONFIGURA AQUÍ TU PROYECTO SUPABASE (ver instrucciones)
+   ========================================================== */
+const SUPABASE_URL = 'https://qntqjyookqeqxfyuoogi.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'sb_publishable_Cswl3GydWyiJ5VNiPSG1Tg_IFZQEHLf';
+/* ========================================================== */
+
+const TZ='Europe/Madrid', $=id=>document.getElementById(id);
+const configured = !SUPABASE_URL.includes('PEGA_AQUI') && !SUPABASE_ANON_KEY.includes('PEGA_AQUI');
+const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+let selected=new Date(), viewMonth=new Date(selected.getFullYear(),selected.getMonth(),1);
+let events=[]; // {id,title,date,start,end,color,notes}
+let tasks=[];  // {id,title,priority,completions}
+let currentUser=null;
+let realtimeChannel=null;
+const colors=['#6757e8','#e05b83','#1da88a','#e39a35','#3985d7','#9b59b6'];
+
+/* ---------- Utilidades de fecha (España) ---------- */
+function pad(n){return String(n).padStart(2,'0')}
+function dateKey(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function parseDate(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)}
+function todayKey(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ}).format(new Date())}
+function fmtDate(d,opt={weekday:'long',day:'numeric',month:'long'}){return new Intl.DateTimeFormat('es-ES',{...opt,timeZone:TZ}).format(d)}
+function monday(d){const x=new Date(d);x.setHours(0,0,0,0);let day=x.getDay();x.setDate(x.getDate()-(day===0?6:day-1));return x}
+
+/* ---------- Caché local (para modo sin conexión) ---------- */
+function cacheLocally(){
+  try{
+    localStorage.setItem('miDiaEvents',JSON.stringify(events));
+    localStorage.setItem('miDiaTasks',JSON.stringify(tasks));
+  }catch(e){}
+}
+function loadFromCache(){
+  events=JSON.parse(localStorage.getItem('miDiaEvents')||'[]');
+  tasks=JSON.parse(localStorage.getItem('miDiaTasks')||'[]');
+}
+
+/* ---------- Estado de conexión ---------- */
+function setSyncStatus(state){
+  const pill=$('syncPill'), label=$('syncLabel'), banner=$('offlineBanner');
+  if(state==='online'){pill.classList.remove('offline');label.textContent='Sincronizado';banner.style.display='none'}
+  else if(state==='syncing'){pill.classList.remove('offline');label.textContent='Sincronizando…'}
+  else{pill.classList.add('offline');label.textContent='Sin conexión';banner.style.display='block'}
+}
+window.addEventListener('online',()=>{setSyncStatus('syncing');loadData();});
+window.addEventListener('offline',()=>setSyncStatus('offline'));
+
+/* ---------- Autenticación ---------- */
+let authMode='login';
+$('tabLogin').onclick=()=>{authMode='login';$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('authTitle').textContent='Iniciar sesión';$('authSubmit').textContent='Entrar';$('authMsg').textContent='';$('authError').textContent=''};
+$('tabSignup').onclick=()=>{authMode='signup';$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('authTitle').textContent='Crear cuenta';$('authSubmit').textContent='Crear cuenta';$('authMsg').textContent='';$('authError').textContent=''};
+
+$('authForm').onsubmit=async(e)=>{
+  e.preventDefault();
+  $('authError').textContent='';$('authMsg').textContent='';
+  if(!configured){
+    $('authError').textContent='Falta configurar Supabase en el archivo (SUPABASE_URL / SUPABASE_ANON_KEY). Revisa las instrucciones.';
+    return;
+  }
+  const email=$('authEmail').value.trim(), password=$('authPassword').value;
+  $('authSubmit').disabled=true;
+  try{
+    if(authMode==='login'){
+      const {error}=await supabase.auth.signInWithPassword({email,password});
+      if(error) throw error;
+    }else{
+      const {error}=await supabase.auth.signUp({email,password});
+      if(error) throw error;
+      $('authMsg').textContent='Cuenta creada. Si tu proyecto requiere confirmación, revisa tu correo; si no, ya puedes entrar.';
+    }
+  }catch(err){
+    $('authError').textContent=err.message||'No se pudo completar la operación.';
+  }finally{
+    $('authSubmit').disabled=false;
+  }
+};
+
+$('logoutBtn').onclick=async()=>{
+  if(supabase) await supabase.auth.signOut();
+  showAuthScreen();
+};
+
+function showAuthScreen(){
+  $('authScreen').style.display='grid';
+  $('mainApp').style.display='none';
+  if(realtimeChannel){supabase.removeChannel(realtimeChannel);realtimeChannel=null}
+}
+function showApp(user){
+  currentUser=user;
+  $('authScreen').style.display='none';
+  $('mainApp').style.display='block';
+  $('userEmail').textContent=user.email;
+  loadData();
+  subscribeRealtime();
+}
+
+async function initAuth(){
+  if(!configured){
+    // Sin credenciales configuradas: modo demo local para que puedas ver la app.
+    $('authError').textContent='Modo demo: configura Supabase para sincronizar entre dispositivos (ver instrucciones adjuntas).';
+    loadFromCache();
+    $('authScreen').style.display='none';
+    $('mainApp').style.display='block';
+    $('userEmail').textContent='modo local';
+    $('logoutBtn').style.display='none';
+    render();
+    return;
+  }
+  const {data:{session}}=await supabase.auth.getSession();
+  if(session) showApp(session.user);
+  else showAuthScreen();
+
+  supabase.auth.onAuthStateChange((event,session)=>{
+    if(session) showApp(session.user);
+    else showAuthScreen();
+  });
+}
+
+/* ---------- Carga y sincronización de datos ---------- */
+async function loadData(){
+  if(!configured){render();return}
+  setSyncStatus('syncing');
+  try{
+    const [{data:evs,error:e1},{data:tks,error:e2}]=await Promise.all([
+      supabase.from('events').select('*').order('date').order('start_time'),
+      supabase.from('tasks').select('*').order('created_at')
+    ]);
+    if(e1) throw e1; if(e2) throw e2;
+    events=(evs||[]).map(e=>({id:e.id,title:e.title,date:e.date,start:e.start_time,end:e.end_time,color:e.color,notes:e.notes||''}));
+    tasks=(tks||[]).map(t=>({id:t.id,title:t.title,priority:t.priority||'normal',completions:t.completions||{}}));
+    cacheLocally();
+    setSyncStatus('online');
+  }catch(err){
+    loadFromCache();
+    setSyncStatus('offline');
+  }
+  render();
+}
+
+function subscribeRealtime(){
+  if(!configured || !currentUser) return;
+  if(realtimeChannel) supabase.removeChannel(realtimeChannel);
+  realtimeChannel=supabase.channel('mi-dia-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'events',filter:`user_id=eq.${currentUser.id}`},()=>loadData())
+    .on('postgres_changes',{event:'*',schema:'public',table:'tasks',filter:`user_id=eq.${currentUser.id}`},()=>loadData())
+    .subscribe();
+}
+
+/* ---------- Operaciones CRUD (nube + caché) ---------- */
+async function saveEvent(obj){
+  if(!configured){
+    events=events.filter(x=>x.id!==obj.id);
+    events.push(obj);
+    cacheLocally();
+    return;
+  }
+  const payload={title:obj.title,date:obj.date,start_time:obj.start,end_time:obj.end,color:obj.color,notes:obj.notes};
+  if(events.find(x=>x.id===obj.id)){
+    await supabase.from('events').update(payload).eq('id',obj.id);
+  }else{
+    await supabase.from('events').insert(payload);
+  }
+  await loadData();
+}
+async function deleteEvent(id){
+  if(!configured){events=events.filter(x=>x.id!==id);cacheLocally();render();return}
+  await supabase.from('events').delete().eq('id',id);
+  await loadData();
+}
+async function createTask(title,priority){
+  if(!configured){
+    tasks.push({id:crypto.randomUUID(),title,priority,completions:{}});
+    cacheLocally();render();return;
+  }
+  await supabase.from('tasks').insert({title,priority,completions:{}});
+  await loadData();
+}
+async function toggleTask(t,dateK,checked){
+  t.completions[dateK]=checked;
+  if(!configured){cacheLocally();render();return}
+  await supabase.from('tasks').update({completions:t.completions}).eq('id',t.id);
+  // Actualización optimista sin recargar todo, para que se sienta instantáneo:
+  renderTasks();renderStats();
+}
+async function deleteTask(id){
+  if(!configured){tasks=tasks.filter(x=>x.id!==id);cacheLocally();render();return}
+  await supabase.from('tasks').delete().eq('id',id);
+  await loadData();
+}
+
+/* ---------- UI: modales ---------- */
+function openModal(id){$(id).classList.add('open')}
+function closeModals(){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'))}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModals);
+
+/* ---------- Render ---------- */
+function renderMini(){
+ $('monthLabel').textContent=new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(viewMonth);
+ const first=new Date(viewMonth.getFullYear(),viewMonth.getMonth(),1), start=monday(first);
+ $('miniCalendar').innerHTML='';
+ for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let b=document.createElement('button');b.textContent=d.getDate();if(d.getMonth()!==viewMonth.getMonth())b.style.opacity='.3';if(dateKey(d)===dateKey(selected))b.classList.add('active');if(dateKey(d)===todayKey())b.classList.add('today');b.onclick=()=>{selected=d;render()};$('miniCalendar').appendChild(b)}
+}
+function renderHeader(){
+ $('selectedDateLabel').textContent=fmtDate(selected);
+ const h=Number(new Intl.DateTimeFormat('es-ES',{hour:'numeric',hour12:false,timeZone:TZ}).format(new Date()));
+ $('greeting').textContent=(h<6?'Buenas noches':h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches')+' 👋';
+}
+function renderStats(){
+ const k=dateKey(selected);
+ const es=events.filter(e=>e.date===k).sort((a,b)=>a.start.localeCompare(b.start));
+ const done=tasks.filter(t=>t.completions && t.completions[k]).length;
+ $('eventCount').textContent=es.length;
+ $('doneCount').textContent=`${done}/${tasks.length}`;
+ $('progressBar').style.width=tasks.length?done/tasks.length*100+'%':'0%';
+ const now=new Date();
+ const madridTime=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:TZ}).format(now).replace('.',':');
+ const next=es.find(e=>e.start>=madridTime);
+ $('nextEvent').textContent=next?next.title:'—';
+ $('nextTime').textContent=next?`${next.start}–${next.end}`:'Sin eventos pendientes';
+}
+function renderCalendar(){
+ const start=monday(selected), grid=$('calendarGrid'); grid.innerHTML='';
+ for(let day=0;day<7;day++){
+   const d=new Date(start); d.setDate(start.getDate()+day);
+   const wrapper=document.createElement('div'); wrapper.className='day-column';
+   const head=document.createElement('div');
+   head.className='day-head'+(dateKey(d)===dateKey(selected)?' selected':'');
+   head.innerHTML=`${['L','M','X','J','V','S','D'][day]}<strong>${d.getDate()}</strong>`;
+   head.onclick=()=>{selected=new Date(d);render()};
+   wrapper.appendChild(head);
+   const box=document.createElement('div'); box.className='day-events';
+   const dayEvents=events.filter(e=>e.date===dateKey(d)).sort((a,b)=>a.start.localeCompare(b.start));
+   dayEvents.forEach(e=>{
+     const card=document.createElement('div');
+     card.className='day-event-card';
+     card.style.background=e.color||colors[0];
+     card.innerHTML=`<strong>${e.title}</strong><div class="day-event-time">${e.start} – ${e.end}</div>${e.notes?`<div class="day-event-notes">${e.notes}</div>`:''}`;
+     card.onclick=()=>editEvent(e.id);
+     box.appendChild(card);
+   });
+   wrapper.appendChild(box);
+   grid.appendChild(wrapper);
+ }
+}
+function renderTasks(){
+ const label=$('taskDateLabel');
+ if(label) label.textContent=fmtDate(selected,{weekday:'long',day:'numeric',month:'long'});
+ const list=$('tasks'); list.innerHTML='';
+ const current=dateKey(selected);
+ if(!tasks.length){
+   list.innerHTML='<div class="empty">No tienes tareas recurrentes. Añade una y aparecerá todos los días.</div>';
+   return;
+ }
+ tasks.forEach(t=>{
+   if(!t.completions || typeof t.completions!=='object') t.completions={};
+   const checked=!!t.completions[current];
+   const row=document.createElement('div');
+   row.className='task-row'+(checked?' done':'');
+   row.innerHTML=`<input type="checkbox" ${checked?'checked':''}><span class="task-name">${t.title}</span><span class="muted" style="font-size:11px">${t.priority==='alta'?'🔴':t.priority==='baja'?'🔵':'🟣'}</span><button class="delete">×</button>`;
+   row.querySelector('input').onchange=e=>toggleTask(t,current,e.target.checked);
+   row.querySelector('.delete').onclick=()=>{
+     if(confirm(`¿Eliminar "${t.title}" de tus tareas diarias?`)) deleteTask(t.id);
+   };
+   list.appendChild(row);
+ });
+}
+function renderDayEvents(){
+ const list=$('dayEvents'),k=dateKey(selected),es=events.filter(e=>e.date===k).sort((a,b)=>a.start.localeCompare(b.start));list.innerHTML='';
+ if(!es.length){list.innerHTML='<div class="empty">Día despejado. ¡Disfruta de tu tiempo!</div>';return}
+ es.forEach(e=>{let row=document.createElement('div');row.className='task-row';row.innerHTML=`<span style="width:9px;height:35px;border-radius:8px;background:${e.color};display:block"></span><div class="task-name"><strong>${e.title}</strong><div class="muted" style="font-size:12px">${e.start}–${e.end}${e.notes?' · '+e.notes:''}</div></div><button class="delete">✎</button><button class="delete">×</button>`;row.children[2].onclick=()=>editEvent(e.id);row.children[3].onclick=()=>{if(confirm(`¿Eliminar "${e.title}"?`)) deleteEvent(e.id)};list.appendChild(row)})
+}
+function render(){renderMini();renderHeader();renderStats();renderCalendar();renderTasks();renderDayEvents()}
+function editEvent(id){
+ const e=events.find(x=>x.id===id);if(!e)return;
+ $('eventModalTitle').textContent='Editar evento';$('eventId').value=e.id;$('eventTitle').value=e.title;$('eventDate').value=e.date;$('eventColor').value=e.color;$('eventStart').value=e.start;$('eventEnd').value=e.end;$('eventNotes').value=e.notes||'';openModal('eventModal')
+}
+
+/* ---------- Copia de seguridad manual (JSON) ---------- */
+function exportBackup(){
+  const backup={app:'Mi Día · Planificador',version:2,exportedAt:new Date().toISOString(),events,tasks,darkMode:document.body.classList.contains('dark')};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`mi-dia-copia-${new Date().toISOString().slice(0,10)}.json`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('exportBtn').onclick=exportBackup;
+
+/* ---------- Formularios ---------- */
+$('eventForm').onsubmit=async(e)=>{
+  e.preventDefault();
+  let id=$('eventId').value||crypto.randomUUID();
+  let obj={id,title:$('eventTitle').value.trim(),date:$('eventDate').value,color:$('eventColor').value,start:$('eventStart').value,end:$('eventEnd').value,notes:$('eventNotes').value.trim()};
+  if(obj.end<=obj.start){alert('La hora de finalización debe ser posterior a la de inicio.');return}
+  closeModals();
+  selected=parseDate(obj.date);viewMonth=new Date(selected.getFullYear(),selected.getMonth(),1);
+  await saveEvent(obj);
+  render();
+};
+$('taskForm').onsubmit=async(e)=>{
+  e.preventDefault();
+  const title=$('taskTitle').value.trim();
+  if(!title) return;
+  closeModals();
+  await createTask(title,$('taskPriority').value);
+};
+$('newEventBtn').onclick=()=>{$('eventForm').reset();$('eventId').value='';$('eventDate').value=dateKey(selected);$('eventModalTitle').textContent='Nuevo evento';openModal('eventModal')}
+$('newTaskBtn').onclick=()=>{$('taskForm').reset();openModal('taskModal')}
+$('prevMonth').onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()-1);renderMini()}
+$('nextMonth').onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()+1);renderMini()}
+$('todayBtn').onclick=$('weekToday').onclick=()=>{selected=parseDate(todayKey());viewMonth=new Date(selected.getFullYear(),selected.getMonth(),1);render()}
+$('prevWeek').onclick=()=>{selected.setDate(selected.getDate()-7);render()}
+$('nextWeek').onclick=()=>{selected.setDate(selected.getDate()+7);render()}
+$('filterAllBtn').onclick=()=>{const k=dateKey(selected);alert(events.filter(e=>e.date===k).map(e=>`${e.start} ${e.title}`).join('\n')||'No hay eventos para este día.')}
+$('themeBtn').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('miDiaDark',document.body.classList.contains('dark'))}
+if(localStorage.getItem('miDiaDark')==='true')document.body.classList.add('dark');
+
+function tick(){$('clock').textContent=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:TZ}).format(new Date())}
+setInterval(tick,1000);tick();
+
+/* ---------- Instalar como app (PWA) ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+/* ---------- Arranque ---------- */
+initAuth();
+</script>
+</body>
+</html>
