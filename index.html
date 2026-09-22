@@ -142,8 +142,19 @@ const SUPABASE_ANON_KEY = 'sb_publishable_Cswl3GydWyiJ5VNiPSG1Tg_IFZQEHLf';
 /* ========================================================== */
 
 const TZ='Europe/Madrid', $=id=>document.getElementById(id);
-const configured = !SUPABASE_URL.includes('PEGA_AQUI') && !SUPABASE_ANON_KEY.includes('PEGA_AQUI');
-const supabase = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let configured = !SUPABASE_URL.includes('PEGA_AQUI') && !SUPABASE_ANON_KEY.includes('PEGA_AQUI');
+let supabase = null;
+let initErrorMsg = '';
+if(configured){
+  try{
+    if(!window.supabase) throw new Error('No se pudo cargar la librería de Supabase (cdn.jsdelivr.net). Revisa tu conexión a internet o si algo la está bloqueando (adblocker, firewall, red del trabajo/colegio).');
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }catch(err){
+    configured = false;
+    initErrorMsg = err.message || 'No se pudo inicializar Supabase.';
+    console.error('Mi Día — error de inicialización:', err);
+  }
+}
 
 let selected=new Date(), viewMonth=new Date(selected.getFullYear(),selected.getMonth(),1);
 let events=[]; // {id,title,date,start,end,color,notes}
@@ -190,8 +201,10 @@ $('tabSignup').onclick=()=>{authMode='signup';$('tabSignup').classList.add('acti
 $('authForm').onsubmit=async(e)=>{
   e.preventDefault();
   $('authError').textContent='';$('authMsg').textContent='';
-  if(!configured){
-    $('authError').textContent='Falta configurar Supabase en el archivo (SUPABASE_URL / SUPABASE_ANON_KEY). Revisa las instrucciones.';
+  if(!configured || !supabase){
+    $('authError').textContent=initErrorMsg
+      ? 'No se pudo conectar con Supabase: '+initErrorMsg
+      : 'Falta configurar Supabase en el archivo (SUPABASE_URL / SUPABASE_ANON_KEY). Revisa las instrucciones.';
     return;
   }
   const email=$('authEmail').value.trim(), password=$('authPassword').value;
@@ -233,8 +246,10 @@ function showApp(user){
 
 async function initAuth(){
   if(!configured){
-    // Sin credenciales configuradas: modo demo local para que puedas ver la app.
-    $('authError').textContent='Modo demo: configura Supabase para sincronizar entre dispositivos (ver instrucciones adjuntas).';
+    // Sin credenciales configuradas, o fallo al inicializar: modo demo local.
+    $('authError').textContent=initErrorMsg
+      ? 'No se pudo conectar con Supabase: '+initErrorMsg
+      : 'Modo demo: configura Supabase para sincronizar entre dispositivos (ver instrucciones adjuntas).';
     loadFromCache();
     $('authScreen').style.display='none';
     $('mainApp').style.display='block';
@@ -243,14 +258,20 @@ async function initAuth(){
     render();
     return;
   }
-  const {data:{session}}=await supabase.auth.getSession();
-  if(session) showApp(session.user);
-  else showAuthScreen();
-
-  supabase.auth.onAuthStateChange((event,session)=>{
+  try{
+    const {data:{session}}=await supabase.auth.getSession();
     if(session) showApp(session.user);
     else showAuthScreen();
-  });
+
+    supabase.auth.onAuthStateChange((event,session)=>{
+      if(session) showApp(session.user);
+      else showAuthScreen();
+    });
+  }catch(err){
+    console.error('Mi Día — error al comprobar la sesión:', err);
+    $('authError').textContent='No se pudo contactar con Supabase: '+(err.message||'error de red')+'. Comprueba la URL y la clave, y tu conexión a internet.';
+    showAuthScreen();
+  }
 }
 
 /* ---------- Carga y sincronización de datos ---------- */
