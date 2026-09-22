@@ -143,12 +143,12 @@ const SUPABASE_ANON_KEY = 'sb_publishable_Cswl3GydWyiJ5VNiPSG1Tg_IFZQEHLf';
 
 const TZ='Europe/Madrid', $=id=>document.getElementById(id);
 let configured = !SUPABASE_URL.includes('PEGA_AQUI') && !SUPABASE_ANON_KEY.includes('PEGA_AQUI');
-let supabase = null;
+let sb = null;
 let initErrorMsg = '';
 if(configured){
   try{
     if(!window.supabase) throw new Error('No se pudo cargar la librería de Supabase (cdn.jsdelivr.net). Revisa tu conexión a internet o si algo la está bloqueando (adblocker, firewall, red del trabajo/colegio).');
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }catch(err){
     configured = false;
     initErrorMsg = err.message || 'No se pudo inicializar Supabase.';
@@ -201,7 +201,7 @@ $('tabSignup').onclick=()=>{authMode='signup';$('tabSignup').classList.add('acti
 $('authForm').onsubmit=async(e)=>{
   e.preventDefault();
   $('authError').textContent='';$('authMsg').textContent='';
-  if(!configured || !supabase){
+  if(!configured || !sb){
     $('authError').textContent=initErrorMsg
       ? 'No se pudo conectar con Supabase: '+initErrorMsg
       : 'Falta configurar Supabase en el archivo (SUPABASE_URL / SUPABASE_ANON_KEY). Revisa las instrucciones.';
@@ -211,10 +211,10 @@ $('authForm').onsubmit=async(e)=>{
   $('authSubmit').disabled=true;
   try{
     if(authMode==='login'){
-      const {error}=await supabase.auth.signInWithPassword({email,password});
+      const {error}=await sb.auth.signInWithPassword({email,password});
       if(error) throw error;
     }else{
-      const {error}=await supabase.auth.signUp({email,password});
+      const {error}=await sb.auth.signUp({email,password});
       if(error) throw error;
       $('authMsg').textContent='Cuenta creada. Si tu proyecto requiere confirmación, revisa tu correo; si no, ya puedes entrar.';
     }
@@ -226,14 +226,14 @@ $('authForm').onsubmit=async(e)=>{
 };
 
 $('logoutBtn').onclick=async()=>{
-  if(supabase) await supabase.auth.signOut();
+  if(sb) await sb.auth.signOut();
   showAuthScreen();
 };
 
 function showAuthScreen(){
   $('authScreen').style.display='grid';
   $('mainApp').style.display='none';
-  if(realtimeChannel){supabase.removeChannel(realtimeChannel);realtimeChannel=null}
+  if(realtimeChannel){sb.removeChannel(realtimeChannel);realtimeChannel=null}
 }
 function showApp(user){
   currentUser=user;
@@ -259,11 +259,11 @@ async function initAuth(){
     return;
   }
   try{
-    const {data:{session}}=await supabase.auth.getSession();
+    const {data:{session}}=await sb.auth.getSession();
     if(session) showApp(session.user);
     else showAuthScreen();
 
-    supabase.auth.onAuthStateChange((event,session)=>{
+    sb.auth.onAuthStateChange((event,session)=>{
       if(session) showApp(session.user);
       else showAuthScreen();
     });
@@ -280,8 +280,8 @@ async function loadData(){
   setSyncStatus('syncing');
   try{
     const [{data:evs,error:e1},{data:tks,error:e2}]=await Promise.all([
-      supabase.from('events').select('*').order('date').order('start_time'),
-      supabase.from('tasks').select('*').order('created_at')
+      sb.from('events').select('*').order('date').order('start_time'),
+      sb.from('tasks').select('*').order('created_at')
     ]);
     if(e1) throw e1; if(e2) throw e2;
     events=(evs||[]).map(e=>({id:e.id,title:e.title,date:e.date,start:e.start_time,end:e.end_time,color:e.color,notes:e.notes||''}));
@@ -297,8 +297,8 @@ async function loadData(){
 
 function subscribeRealtime(){
   if(!configured || !currentUser) return;
-  if(realtimeChannel) supabase.removeChannel(realtimeChannel);
-  realtimeChannel=supabase.channel('mi-dia-changes')
+  if(realtimeChannel) sb.removeChannel(realtimeChannel);
+  realtimeChannel=sb.channel('mi-dia-changes')
     .on('postgres_changes',{event:'*',schema:'public',table:'events',filter:`user_id=eq.${currentUser.id}`},()=>loadData())
     .on('postgres_changes',{event:'*',schema:'public',table:'tasks',filter:`user_id=eq.${currentUser.id}`},()=>loadData())
     .subscribe();
@@ -314,15 +314,15 @@ async function saveEvent(obj){
   }
   const payload={title:obj.title,date:obj.date,start_time:obj.start,end_time:obj.end,color:obj.color,notes:obj.notes};
   if(events.find(x=>x.id===obj.id)){
-    await supabase.from('events').update(payload).eq('id',obj.id);
+    await sb.from('events').update(payload).eq('id',obj.id);
   }else{
-    await supabase.from('events').insert(payload);
+    await sb.from('events').insert(payload);
   }
   await loadData();
 }
 async function deleteEvent(id){
   if(!configured){events=events.filter(x=>x.id!==id);cacheLocally();render();return}
-  await supabase.from('events').delete().eq('id',id);
+  await sb.from('events').delete().eq('id',id);
   await loadData();
 }
 async function createTask(title,priority){
@@ -330,19 +330,19 @@ async function createTask(title,priority){
     tasks.push({id:crypto.randomUUID(),title,priority,completions:{}});
     cacheLocally();render();return;
   }
-  await supabase.from('tasks').insert({title,priority,completions:{}});
+  await sb.from('tasks').insert({title,priority,completions:{}});
   await loadData();
 }
 async function toggleTask(t,dateK,checked){
   t.completions[dateK]=checked;
   if(!configured){cacheLocally();render();return}
-  await supabase.from('tasks').update({completions:t.completions}).eq('id',t.id);
+  await sb.from('tasks').update({completions:t.completions}).eq('id',t.id);
   // Actualización optimista sin recargar todo, para que se sienta instantáneo:
   renderTasks();renderStats();
 }
 async function deleteTask(id){
   if(!configured){tasks=tasks.filter(x=>x.id!==id);cacheLocally();render();return}
-  await supabase.from('tasks').delete().eq('id',id);
+  await sb.from('tasks').delete().eq('id',id);
   await loadData();
 }
 
