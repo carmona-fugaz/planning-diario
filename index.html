@@ -30,6 +30,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 .task-panel{position:sticky;top:18px;align-self:start}
 @media(max-width:1000px){.day-columns{min-width:820px}.task-panel{position:static}}
 .bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.task-panel,.event-panel{padding:20px}.task-row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.task-row:last-child{border:0}.task-row input{accent-color:var(--green);width:18px;height:18px}.task-row.done .task-name{text-decoration:line-through;color:var(--muted)}.task-name{flex:1}.delete{color:var(--danger);background:transparent;font-size:17px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}.modal{position:fixed;inset:0;background:#11182788;display:none;place-items:center;padding:20px;z-index:20}.modal.open{display:grid}.modal-box{background:var(--panel);border-radius:22px;padding:24px;max-width:560px;width:100%;box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0}.close{background:transparent;color:var(--muted);font-size:24px}.empty{padding:20px;text-align:center;color:var(--muted)}.progress{height:8px;background:var(--line);border-radius:20px;overflow:hidden;margin-top:8px}.progress div{height:100%;background:var(--green);width:0;transition:.2s}
+.color-swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.swatch{display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-weight:700}
+.swatch:hover{border-color:var(--sw)}
+.swatch-dot{width:22px;height:22px;border-radius:50%;background:var(--sw);box-shadow:0 3px 8px #0002;flex-shrink:0}
 @media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:18px}.sidebar .section-title{margin-top:0}.bottom-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.app{padding:12px}.topbar,.hero{flex-direction:column}.clock{text-align:left;font-size:25px}.stats{grid-template-columns:1fr}.sidebar{display:block}.hero h2{font-size:22px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
 
@@ -77,6 +81,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
   <div class="actions">
 <span class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncLabel">Sincronizado</span></span>
 <button class="btn" id="themeBtn">☾ Tema</button>
+<button class="btn" id="colorBtn">🎨 Colores</button>
 <button class="btn" id="exportBtn">⇩ Copia de seguridad</button>
 <button class="btn" id="logoutBtn">Salir (<span id="userEmail"></span>)</button>
 <button class="btn primary" id="newEventBtn">＋ Evento</button>
@@ -129,6 +134,21 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 <div class="modal" id="taskModal"><div class="modal-box">
 <div class="modal-head"><h3>Nueva tarea diaria</h3><button class="close" data-close>×</button></div>
 <form id="taskForm"><div class="form-grid"><div class="field full"><label>Tarea diaria recurrente</label><input id="taskTitle" required placeholder="Ej. Beber agua, leer, ordenar..."></div><div class="field full"><label>Prioridad</label><select id="taskPriority"><option value="normal">Normal</option><option value="alta">Alta</option><option value="baja">Baja</option></select></div></div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Guardar tarea</button></div></form>
+</div></div>
+
+<div class="modal" id="colorModal"><div class="modal-box">
+<div class="modal-head"><h3>Personalizar colores</h3><button class="close" data-close>×</button></div>
+<p class="muted" style="font-size:13px;margin-top:-6px">Elige el color principal de la aplicación.</p>
+<div class="color-swatches">
+<button type="button" class="swatch" data-theme="rosa" style="--sw:#e0568f"><span class="swatch-dot"></span>Rosa</button>
+<button type="button" class="swatch" data-theme="azul" style="--sw:#3985d7"><span class="swatch-dot"></span>Azul</button>
+<button type="button" class="swatch" data-theme="rojo" style="--sw:#e0524a"><span class="swatch-dot"></span>Rojo</button>
+<button type="button" class="swatch" data-theme="verde" style="--sw:#20b486"><span class="swatch-dot"></span>Verde</button>
+</div>
+<div class="actions" style="justify-content:space-between;margin-top:20px">
+<button type="button" class="btn" id="resetColorsBtn">↺ Restablecer (morado)</button>
+<button type="button" class="btn" data-close>Cerrar</button>
+</div>
 </div></div>
 
 <!-- Cliente de Supabase -->
@@ -472,6 +492,42 @@ $('nextWeek').onclick=()=>{selected.setDate(selected.getDate()+7);render()}
 $('filterAllBtn').onclick=()=>{const k=dateKey(selected);alert(events.filter(e=>e.date===k).map(e=>`${e.start} ${e.title}`).join('\n')||'No hay eventos para este día.')}
 $('themeBtn').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('miDiaDark',document.body.classList.contains('dark'))}
 if(localStorage.getItem('miDiaDark')==='true')document.body.classList.add('dark');
+
+/* ---------- Personalización de colores (4 presets) ---------- */
+const THEME_PRESETS={
+  rosa:{primary:'#e0568f',primary2:'#f2a6c9'},
+  azul:{primary:'#3985d7',primary2:'#8ec5fb'},
+  rojo:{primary:'#e0524a',primary2:'#f5a89c'},
+  verde:{primary:'#20b486',primary2:'#8de3c4'}
+};
+function getCustomTheme(){
+  try{return JSON.parse(localStorage.getItem('miDiaCustomTheme')||'{}')}catch(e){return {}}
+}
+function applyCustomTheme(){
+  const t=getCustomTheme();
+  if(t.primary && t.primary2){
+    document.body.style.setProperty('--primary',t.primary);
+    document.body.style.setProperty('--primary2',t.primary2);
+  }else{
+    document.body.style.removeProperty('--primary');
+    document.body.style.removeProperty('--primary2');
+  }
+}
+applyCustomTheme();
+$('colorBtn').onclick=()=>openModal('colorModal');
+document.querySelectorAll('.swatch').forEach(btn=>{
+  btn.onclick=()=>{
+    const preset=THEME_PRESETS[btn.dataset.theme];
+    localStorage.setItem('miDiaCustomTheme',JSON.stringify(preset));
+    applyCustomTheme();
+    closeModals();
+  };
+});
+$('resetColorsBtn').onclick=()=>{
+  localStorage.removeItem('miDiaCustomTheme');
+  applyCustomTheme();
+  closeModals();
+};
 
 function tick(){$('clock').textContent=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:TZ}).format(new Date())}
 setInterval(tick,1000);tick();
