@@ -1,32 +1,48 @@
-# Guía de Instalación y Uso
+# Mi Día — Planning Diario
 
-Bienvenido/a a la aplicación **Planning Diario**. A continuación se detallan la URL de acceso, las instrucciones para la instalación en dispositivos móviles y el funcionamiento del sistema de cuentas.
+**Mi Día** es un planificador personal para organizar tu día a día: un calendario semanal para tus eventos con hora de inicio y fin, y una lista de tareas diarias recurrentes con casillas para marcarlas según las vas completando. Todo pensado para verse de un vistazo, sin complicaciones.
 
-## 🔗 URL de Acceso
+Funciona como aplicación web y también como app instalable en el móvil o la tablet (PWA), con tus datos sincronizados en la nube en tiempo real entre todos tus dispositivos.
 
-Puedes acceder a la aplicación directamente desde el navegador en el siguiente enlace:
-👉 **[https://carmona-fugaz.github.io/planning-diario/](https://carmona-fugaz.github.io/planning-diario/)**
+## ✨ Qué puedes hacer con ella
 
----
+- **Calendario semanal**: navega entre semanas y consulta de un vistazo qué tienes cada día.
+- **Eventos con horario**: crea eventos (trabajo, estudio, gimnasio, citas...) con fecha, hora de inicio, hora de fin, color y notas.
+- **Tareas diarias recurrentes**: añade tareas que quieres repetir cada día (beber agua, leer, ordenar...) y márcalas con un check; el check es independiente para cada fecha, así que vuelven a aparecer sin marcar al día siguiente.
+- **Panel de productividad**: reloj y fecha en tiempo real de España (zona horaria Europe/Madrid), resumen de eventos del día, progreso de tareas completadas y tu próximo evento.
+- **Modo claro / oscuro** y **4 colores de acento** para personalizar el aspecto (rosa, azul, rojo o verde).
+- **Copia de seguridad manual**: exporta tus datos a un archivo `.json` cuando quieras tener una copia extra.
 
-## 📱 Instalación en Móviles y Tablets (PWA)
+## 🔗 Acceder a la aplicación
 
-Para disfrutar de la mejor experiencia de usuario en tu teléfono o tablet, sigue cuidadosamente estos pasos de instalación:
+👉 **https://carmona-fugaz.github.io/planning-diario/**
 
-1. **Abre Google Chrome:** Entra en el enlace de la aplicación ([https://carmona-fugaz.github.io/planning-diario/](https://carmona-fugaz.github.io/planning-diario/)) desde el navegador **Google Chrome** en tu dispositivo.
+Puedes usarla directamente desde el navegador (portátil, móvil o tablet) sin instalar nada, o instalarla como app siguiendo los pasos de abajo.
 
-2. **Menú de Opciones:** Toca sobre el menú de los **tres puntos verticales** (⋮) ubicado en la esquina superior derecha del navegador.
+## 📱 Instalación en móvil o tablet (PWA)
 
-3. **Descargar la Aplicación:** Selecciona la opción **"Instalar aplicación"** o **"Descargar aplicación"**.
+Instalarla te da un icono propio en la pantalla de inicio y la abre a pantalla completa, como una app normal.
 
-   > ⚠️ **IMPORTANTE:** **No** selecciones la opción *"Añadir a la pantalla de inicio"* ni *"Crear acceso directo"*. Debes pulsar específicamente en **"Instalar aplicación"** (o **"Descargar aplicación"**) para que funcione correctamente como una App independiente.
+1. **Abre el enlace en Google Chrome**: https://carmona-fugaz.github.io/planning-diario/
+2. Toca el menú de tres puntos (⋮) en la esquina superior derecha del navegador.
+3. Selecciona **"Instalar aplicación"** (a veces aparece como "Descargar aplicación").
 
----
+> ⚠️ **Importante:** no elijas "Añadir a la pantalla de inicio" ni "Crear acceso directo" — esas opciones solo crean un enlace directo al navegador. Debes pulsar específicamente **"Instalar aplicación"** para que se abra en su propia ventana, sin la barra de Chrome, y funcione como una app independiente.
 
-## 🔄 Sincronización Multi-dispositivo en Tiempo Real
+En un ordenador, Chrome también permite instalarla: busca el icono de instalación (una pantalla con una flecha) en la barra de direcciones.
 
-Una vez creada tu cuenta de usuario e iniciada la sesión:
+## 🔐 Cuenta y sincronización entre dispositivos
 
-* **Acceso Multidispositivo:** Podrás iniciar sesión con tus credenciales en cualquier otro dispositivo (móvil, tablet u ordenador).
+La aplicación usa un sistema de cuentas (correo y contraseña) para guardar tus datos en la nube:
 
-* **Actualización en Tiempo Real:** Toda tu información, datos y cambios se sincronizarán al instante en todos tus dispositivos de forma automática.
+1. La primera vez, crea tu cuenta desde la pantalla de acceso.
+2. A partir de ahí, inicia sesión con esas mismas credenciales en cualquier otro dispositivo: móvil, tablet u ordenador.
+3. **Todo se sincroniza al instante y de forma automática**: un evento que añadas o una tarea que marques en un dispositivo aparece al momento en los demás, sin que tengas que hacer nada más.
+
+Si en algún momento pierdes la conexión a internet, la app te avisa y sigue mostrando la última versión sincronizada; en cuanto recuperas la conexión, se pone al día sola.
+
+Tus datos son privados: solo tu cuenta puede ver y modificar tus propios eventos y tareas.
+
+## 🛠️ Cómo está hecha (para curiosos)
+
+Un único archivo web (HTML, CSS y JavaScript) sin frameworks, con [Supabase](https://supabase.com) como base de datos y sistema de autenticación en la nube, y configurada como PWA (manifiesto + service worker) para poder instalarse y funcionar sin conexión.
