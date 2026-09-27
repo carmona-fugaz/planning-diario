@@ -14,8 +14,12 @@ body.dark{--bg:#111522;--panel:#1b2131;--text:#f1f4ff;--muted:#9da6bc;--line:#30
 button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{max-width:1450px;margin:auto;padding:22px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),#a18cff);color:white;border-radius:16px;font-size:25px}.brand h1{font-size:22px;margin:0}.muted{color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}
 .btn{padding:10px 14px;border-radius:12px;background:var(--panel);color:var(--text);border:1px solid var(--line)}.btn.primary{background:var(--primary);color:#fff;border-color:transparent}.btn:hover{filter:brightness(.97)}.btn:disabled{opacity:.5;cursor:not-allowed}
-.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}.sidebar{padding:20px;height:max-content}.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:800;margin:22px 0 10px}.mini-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mini-calendar button{padding:7px 0;border-radius:9px;background:transparent;color:var(--text);font-size:12px}.mini-calendar button.active{background:var(--primary);color:#fff}.mini-calendar button.today{outline:2px solid var(--primary2)}.weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;color:var(--muted);font-size:11px;text-align:center;margin-bottom:4px}
-.main{min-width:0}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:24px;margin-bottom:18px}.hero h2{margin:0 0 5px;font-size:27px}.clock{text-align:right;font-weight:800;font-size:30px}.date-line{text-transform:capitalize;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{padding:16px 18px}.stat strong{font-size:25px;display:block}.calendar-panel{padding:20px;overflow:hidden}.calendar-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.calendar-head h3{margin:0;font-size:18px}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}.sidebar{padding:20px;height:max-content}.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:800;margin:22px 0 10px}.mini-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mini-calendar button{position:relative;padding:7px 0 12px;border-radius:9px;background:transparent;color:var(--text);font-size:12px}.mini-calendar button.active{background:var(--primary);color:#fff}.mini-calendar button.today{outline:2px solid var(--primary2)}.mini-calendar .event-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary)}.mini-calendar button.active .event-dot{background:#fff}.weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;color:var(--muted);font-size:11px;text-align:center;margin-bottom:4px}
+.main{min-width:0}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:24px;margin-bottom:18px}.hero h2{margin:0 0 5px;font-size:27px}.clock{text-align:right;font-weight:800;font-size:30px}.date-line{text-transform:capitalize;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{padding:16px 18px}.stat strong{font-size:25px;display:block}
+.next-events-list{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.next-events-list .ne-item{font-size:13px;line-height:1.3}
+.next-events-list .ne-item strong{font-size:13px;display:inline}
+.next-events-list .ne-when{color:var(--muted);font-size:11.5px;display:block}.calendar-panel{padding:20px;overflow:hidden}.calendar-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.calendar-head h3{margin:0;font-size:18px}
 .timeline{max-height:none;overflow-x:auto;overflow-y:visible;border:0}
 .day-columns{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:10px;min-width:860px}
 .day-column{min-height:82px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
@@ -29,7 +33,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 .day-event-notes{font-size:10px;opacity:.86;margin-top:4px}
 .task-panel{position:sticky;top:18px;align-self:start}
 @media(max-width:1000px){.day-columns{min-width:820px}.task-panel{position:static}}
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.task-panel,.event-panel{padding:20px}.task-row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.task-row:last-child{border:0}.task-row input{accent-color:var(--green);width:18px;height:18px}.task-row.done .task-name{text-decoration:line-through;color:var(--muted)}.task-name{flex:1}.delete{color:var(--danger);background:transparent;font-size:17px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}.modal{position:fixed;inset:0;background:#11182788;display:none;place-items:center;padding:20px;z-index:20}.modal.open{display:grid}.modal-box{background:var(--panel);border-radius:22px;padding:24px;max-width:560px;width:100%;box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0}.close{background:transparent;color:var(--muted);font-size:24px}.empty{padding:20px;text-align:center;color:var(--muted)}.progress{height:8px;background:var(--line);border-radius:20px;overflow:hidden;margin-top:8px}.progress div{height:100%;background:var(--green);width:0;transition:.2s}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.task-panel,.event-panel{padding:20px}.task-row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.task-row:last-child{border:0}.task-row input{accent-color:var(--green);width:18px;height:18px}.task-row.done .task-name{text-decoration:line-through;color:var(--muted)}.task-name{flex:1}.delete{color:var(--danger);background:transparent;font-size:17px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}.modal{position:fixed;inset:0;background:#11182788;display:none;place-items:center;padding:20px;z-index:20}.modal.open{display:grid}.modal-box{background:var(--panel);border-radius:22px;padding:24px;max-width:560px;width:100%;box-shadow:var(--shadow)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h3{margin:0}.close{background:transparent;color:var(--muted);font-size:24px}.empty{padding:20px;text-align:center;color:var(--muted)}
+.week-agenda-day{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:16px 0 8px}
+.week-agenda-day:first-child{margin-top:0}
+.week-agenda-item{padding:9px 12px;border-radius:10px;background:var(--bg);margin-bottom:6px;cursor:pointer;font-size:14px;font-weight:600}
+.week-agenda-item:hover{background:var(--line)}.progress{height:8px;background:var(--line);border-radius:20px;overflow:hidden;margin-top:8px}.progress div{height:100%;background:var(--green);width:0;transition:.2s}
 .color-swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
 .swatch{display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-weight:700}
 .swatch:hover{border-color:var(--sw)}
@@ -51,9 +59,20 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 .sync-pill .dot{width:8px;height:8px;border-radius:99px;background:var(--green)}
 .sync-pill.offline .dot{background:var(--danger)}
 #offlineBanner{display:none;background:#e0526022;border:1px solid var(--danger);color:var(--danger);padding:10px 16px;border-radius:12px;margin-bottom:16px;font-size:13px}
+#noInternetScreen{position:fixed;inset:0;background:var(--bg);display:none;place-items:center;z-index:60;padding:20px}
 </style>
 </head>
 <body>
+
+<!-- Pantalla bloqueante: sin conexión al iniciar -->
+<div id="noInternetScreen">
+  <div class="auth-box" style="text-align:center">
+    <div class="logo" style="margin:0 auto 14px;font-size:24px">📡</div>
+    <h2 style="margin-bottom:6px">Sin conexión a internet</h2>
+    <p class="muted" style="font-size:14px">No es posible acceder a Mi Día sin conexión, ya que la aplicación necesita conectarse a internet para comprobar tu sesión y tus datos.</p>
+    <p class="muted" style="font-size:13px;margin-top:14px">En cuanto recuperes la conexión, se cargará automáticamente.</p>
+  </div>
+</div>
 
 <!-- Pantalla de acceso: login / registro con Supabase -->
 <div id="authScreen">
@@ -99,7 +118,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
   <button class="btn" style="width:100%" id="todayBtn">↺ Volver a hoy</button>
   <div class="section-title">Sincronización</div>
 <p class="muted" style="font-size:13px">Tus eventos y tareas se guardan en la nube y aparecen al instante en cualquier dispositivo donde inicies sesión con esta misma cuenta.</p>
-<div class="section-title">Consejo del día</div><p class="muted" style="font-size:13px">Planifica lo importante primero. Deja espacio para imprevistos y descansos.</p>
+<div class="section-title">Consejo del día</div><p class="muted" style="font-size:13px" id="dailyTip">Planifica lo importante primero. Deja espacio para imprevistos y descansos.</p>
 </aside>
 <main class="main">
 <section class="hero panel">
@@ -109,7 +128,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 <section class="stats">
  <div class="stat panel"><span class="muted">Eventos del día</span><strong id="eventCount">0</strong><span class="muted">en tu agenda</span></div>
  <div class="stat panel"><span class="muted">Tareas completadas</span><strong id="doneCount">0/0</strong><div class="progress"><div id="progressBar"></div></div></div>
- <div class="stat panel"><span class="muted">Próximo evento</span><strong id="nextEvent" style="font-size:17px">—</strong><span class="muted" id="nextTime">Sin eventos pendientes</span></div>
+ <div class="stat panel"><span class="muted">Próximos eventos</span><div id="nextEvents" class="next-events-list"></div></div>
 </section>
 <section class="calendar-panel panel">
  <div class="calendar-head"><h3>Tu semana</h3><div class="actions"><button class="btn" id="prevWeek">‹</button><button class="btn" id="weekToday">Hoy</button><button class="btn" id="nextWeek">›</button></div></div>
@@ -117,7 +136,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 </section>
 <div class="bottom-grid">
 <section class="task-panel panel"><div class="calendar-head"><div><h3 style="margin-bottom:2px">✓ Tareas diarias</h3><div class="muted" style="font-size:12px" id="taskDateLabel"></div></div><button class="btn primary" id="newTaskBtn">＋ Tarea</button></div><div id="tasks"></div></section>
-<section class="event-panel panel"><div class="calendar-head"><h3>Agenda del día</h3><button class="btn" id="filterAllBtn">Ver todo</button></div><div id="dayEvents"></div></section>
+<section class="event-panel panel"><div class="calendar-head"><h3>Agenda semanal</h3></div><div id="dayEvents"></div></section>
 </div>
 </main></div></div>
 
@@ -224,7 +243,7 @@ $('authForm').onsubmit=async(e)=>{
   if(!configured || !sb){
     $('authError').textContent=initErrorMsg
       ? 'No se pudo conectar con Supabase: '+initErrorMsg
-      : 'Falta configurar Supabase en el archivo (SUPABASE_URL / SUPABASE_ANON_KEY). Revisa las instrucciones.';
+      : 'Falta configuración en el archivo';
     return;
   }
   const email=$('authEmail').value.trim(), password=$('authPassword').value;
@@ -236,7 +255,7 @@ $('authForm').onsubmit=async(e)=>{
     }else{
       const {error}=await sb.auth.signUp({email,password});
       if(error) throw error;
-      $('authMsg').textContent='Cuenta creada. Si tu proyecto requiere confirmación, revisa tu correo; si no, ya puedes entrar.';
+      $('authMsg').textContent='Cuenta creada. Revise su correo para confirmar la cuenta, es posible que le redirija a otra web distinta, simplemente tiene que cerrar esa pestaña.';
     }
   }catch(err){
     $('authError').textContent=err.message||'No se pudo completar la operación.';
@@ -268,8 +287,8 @@ async function initAuth(){
   if(!configured){
     // Sin credenciales configuradas, o fallo al inicializar: modo demo local.
     $('authError').textContent=initErrorMsg
-      ? 'No se pudo conectar con Supabase: '+initErrorMsg
-      : 'Modo demo: configura Supabase para sincronizar entre dispositivos (ver instrucciones adjuntas).';
+      ? 'No se pudo conectar con la base de datos: '+initErrorMsg
+      : 'Fallo de configuración';
     loadFromCache();
     $('authScreen').style.display='none';
     $('mainApp').style.display='block';
@@ -289,7 +308,7 @@ async function initAuth(){
     });
   }catch(err){
     console.error('Mi Día — error al comprobar la sesión:', err);
-    $('authError').textContent='No se pudo contactar con Supabase: '+(err.message||'error de red')+'. Comprueba la URL y la clave, y tu conexión a internet.';
+    $('authError').textContent='No se pudo contactar con la base de datos: '+(err.message||'error de red')+'. Comprueba la URL y la clave, y tu conexión a internet.';
     showAuthScreen();
   }
 }
@@ -376,7 +395,7 @@ function renderMini(){
  $('monthLabel').textContent=new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(viewMonth);
  const first=new Date(viewMonth.getFullYear(),viewMonth.getMonth(),1), start=monday(first);
  $('miniCalendar').innerHTML='';
- for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let b=document.createElement('button');b.textContent=d.getDate();if(d.getMonth()!==viewMonth.getMonth())b.style.opacity='.3';if(dateKey(d)===dateKey(selected))b.classList.add('active');if(dateKey(d)===todayKey())b.classList.add('today');b.onclick=()=>{selected=d;render()};$('miniCalendar').appendChild(b)}
+ for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let b=document.createElement('button');const hasEvent=events.some(e=>e.date===dateKey(d));b.innerHTML=String(d.getDate())+(hasEvent?'<span class="event-dot"></span>':'');if(d.getMonth()!==viewMonth.getMonth())b.style.opacity='.3';if(dateKey(d)===dateKey(selected))b.classList.add('active');if(dateKey(d)===todayKey())b.classList.add('today');b.onclick=()=>{selected=d;render()};$('miniCalendar').appendChild(b)}
 }
 function renderHeader(){
  $('selectedDateLabel').textContent=fmtDate(selected);
@@ -390,11 +409,22 @@ function renderStats(){
  $('eventCount').textContent=es.length;
  $('doneCount').textContent=`${done}/${tasks.length}`;
  $('progressBar').style.width=tasks.length?done/tasks.length*100+'%':'0%';
- const now=new Date();
- const madridTime=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:TZ}).format(now).replace('.',':');
- const next=es.find(e=>e.start>=madridTime);
- $('nextEvent').textContent=next?next.title:'—';
- $('nextTime').textContent=next?`${next.start}–${next.end}`:'Sin eventos pendientes';
+
+ const todayK=todayKey();
+ const nowTime=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:TZ}).format(new Date()).replace('.',':');
+ const upcoming=events
+   .filter(e=>e.date>todayK || (e.date===todayK && e.start>=nowTime))
+   .sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))
+   .slice(0,3);
+ const box=$('nextEvents');
+ if(!upcoming.length){
+   box.innerHTML='<span class="muted">Sin eventos pendientes</span>';
+ }else{
+   box.innerHTML=upcoming.map(e=>{
+     const when=e.date===todayK?`Hoy · ${e.start}`:`${fmtDate(parseDate(e.date),{weekday:'short',day:'numeric',month:'short'})} · ${e.start}`;
+     return `<div class="ne-item"><strong>${e.title}</strong><span class="ne-when">${when}</span></div>`;
+   }).join('');
+ }
 }
 function renderCalendar(){
  const start=monday(selected), grid=$('calendarGrid'); grid.innerHTML='';
@@ -442,12 +472,33 @@ function renderTasks(){
    list.appendChild(row);
  });
 }
-function renderDayEvents(){
- const list=$('dayEvents'),k=dateKey(selected),es=events.filter(e=>e.date===k).sort((a,b)=>a.start.localeCompare(b.start));list.innerHTML='';
- if(!es.length){list.innerHTML='<div class="empty">Día despejado. ¡Disfruta de tu tiempo!</div>';return}
- es.forEach(e=>{let row=document.createElement('div');row.className='task-row';row.innerHTML=`<span style="width:9px;height:35px;border-radius:8px;background:${e.color};display:block"></span><div class="task-name"><strong>${e.title}</strong><div class="muted" style="font-size:12px">${e.start}–${e.end}${e.notes?' · '+e.notes:''}</div></div><button class="delete">✎</button><button class="delete">×</button>`;row.children[2].onclick=()=>editEvent(e.id);row.children[3].onclick=()=>{if(confirm(`¿Eliminar "${e.title}"?`)) deleteEvent(e.id)};list.appendChild(row)})
+function renderWeeklyAgenda(){
+ const list=$('dayEvents'); list.innerHTML='';
+ const today=parseDate(todayKey());
+ const sunday=monday(today); sunday.setDate(sunday.getDate()+6);
+ const days=[]; let cursor=new Date(today);
+ while(cursor<=sunday){days.push(new Date(cursor));cursor.setDate(cursor.getDate()+1)}
+ let any=false;
+ days.forEach(d=>{
+   const k=dateKey(d);
+   const es=events.filter(e=>e.date===k).sort((a,b)=>a.start.localeCompare(b.start));
+   if(!es.length) return;
+   any=true;
+   const head=document.createElement('div');
+   head.className='week-agenda-day';
+   head.textContent=fmtDate(d,{weekday:'long',day:'numeric',month:'long'});
+   list.appendChild(head);
+   es.forEach(e=>{
+     const row=document.createElement('div');
+     row.className='week-agenda-item';
+     row.textContent=e.title;
+     row.onclick=()=>editEvent(e.id);
+     list.appendChild(row);
+   });
+ });
+ if(!any) list.innerHTML='<div class="empty">No tienes eventos el resto de esta semana.</div>';
 }
-function render(){renderMini();renderHeader();renderStats();renderCalendar();renderTasks();renderDayEvents()}
+function render(){renderMini();renderHeader();renderStats();renderCalendar();renderTasks();renderWeeklyAgenda();renderDailyTip()}
 function editEvent(id){
  const e=events.find(x=>x.id===id);if(!e)return;
  $('eventModalTitle').textContent='Editar evento';$('eventId').value=e.id;$('eventTitle').value=e.title;$('eventDate').value=e.date;$('eventColor').value=e.color;$('eventStart').value=e.start;$('eventEnd').value=e.end;$('eventNotes').value=e.notes||'';openModal('eventModal')
@@ -489,7 +540,6 @@ $('nextMonth').onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()+1);renderMin
 $('todayBtn').onclick=$('weekToday').onclick=()=>{selected=parseDate(todayKey());viewMonth=new Date(selected.getFullYear(),selected.getMonth(),1);render()}
 $('prevWeek').onclick=()=>{selected.setDate(selected.getDate()-7);render()}
 $('nextWeek').onclick=()=>{selected.setDate(selected.getDate()+7);render()}
-$('filterAllBtn').onclick=()=>{const k=dateKey(selected);alert(events.filter(e=>e.date===k).map(e=>`${e.start} ${e.title}`).join('\n')||'No hay eventos para este día.')}
 $('themeBtn').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('miDiaDark',document.body.classList.contains('dark'))}
 if(localStorage.getItem('miDiaDark')==='true')document.body.classList.add('dark');
 
@@ -532,13 +582,240 @@ $('resetColorsBtn').onclick=()=>{
 function tick(){$('clock').textContent=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:TZ}).format(new Date())}
 setInterval(tick,1000);tick();
 
+/* ---------- Consejo del día (200 consejos, cambia cada día) ---------- */
+const DAILY_TIPS=[
+'Planifica lo importante primero. Deja espacio para imprevistos y descansos.',
+'Escribe tus tres tareas prioritarias antes de empezar el día.',
+'Revisa tu agenda la noche anterior para empezar con claridad.',
+'Divide los proyectos grandes en pasos pequeños y concretos.',
+'Reserva un hueco fijo cada semana para planificar la siguiente.',
+'No llenes el día al 100%: deja margen para lo inesperado.',
+'Agrupa tareas similares para no cambiar de contexto todo el rato.',
+'Define un único objetivo principal para hoy, el resto es secundario.',
+'Revisa tu semana los domingos para llegar al lunes con calma.',
+'Anota las ideas que surjan para no perder el hilo de lo que haces.',
+'Pon fecha límite a las tareas, aunque sea orientativa.',
+'Empieza por la tarea más difícil cuando tengas más energía.',
+'Deja un margen de 10 minutos entre reuniones o eventos.',
+'Revisa qué se quedó pendiente ayer antes de añadir tareas nuevas.',
+'Usa colores o categorías para distinguir tipos de eventos de un vistazo.',
+'Planifica también tus descansos, no solo tus obligaciones.',
+'Al final del día, marca lo hecho y pasa lo pendiente a mañana.',
+'Bloquea tiempo en el calendario para el trabajo que requiere concentración.',
+'No programes más de tres tareas realmente importantes al día.',
+'Revisa tus objetivos del mes una vez por semana.',
+'Silencia las notificaciones mientras haces algo importante.',
+'Trabaja en bloques de 25-50 minutos con pequeños descansos.',
+'Cierra las pestañas que no necesites para la tarea actual.',
+'Ten a mano solo lo necesario para la tarea que estás haciendo.',
+'Si te distraes, anota la idea y vuelve a lo que estabas haciendo.',
+'Elige un único objetivo por bloque de tiempo, no varios a la vez.',
+'Evita revisar el correo nada más despertar.',
+'Pon el móvil fuera de la vista mientras trabajas en algo exigente.',
+'Antes de empezar, pregúntate cuál es el resultado que buscas.',
+'Haz una pequeña pausa entre tarea y tarea para resetear la mente.',
+'Reserva las mañanas para lo que más concentración exige.',
+'Evita la multitarea: termina una cosa antes de empezar otra.',
+'Ten una lista de "distracciones para después" y revísala al acabar.',
+'Marca un límite de tiempo claro antes de empezar una tarea.',
+'Repite mentalmente qué vas a hacer justo antes de empezar.',
+'Usa auriculares o un lugar tranquilo si necesitas concentrarte.',
+'Revisa el correo en horarios fijos, no todo el rato.',
+'Cuando algo te distraiga, pregúntate si es urgente de verdad.',
+'Empieza el día con la tarea más importante, no la más fácil.',
+'Deja la mesa despejada antes de empezar a trabajar.',
+'Levántate cada hora, aunque sea solo un par de minutos.',
+'Sal a que te dé el aire al menos una vez al día.',
+'Bebe agua con regularidad, no esperes a tener sed.',
+'Haz una pausa real para comer, sin pantallas delante.',
+'Estírate un poco entre tareas largas sentado.',
+'Duerme lo suficiente: rinde más quien descansa bien.',
+'No sacrifiques el sueño para ganar una hora de trabajo.',
+'Date un descanso corto después de cada logro, por pequeño que sea.',
+'Escucha a tu cuerpo si necesita parar antes de lo previsto.',
+'Programa un pequeño respiro entre tareas exigentes.',
+'Una siesta corta puede rendir más que una hora de café.',
+'Cambia de postura o de lugar si llevas mucho tiempo igual.',
+'Respira hondo unos segundos antes de una tarea difícil.',
+'No olvides desconectar al terminar la jornada.',
+'Un paseo corto puede aclarar más que media hora pensando.',
+'Reserva tiempo libre real, sin planificar nada en él.',
+'Evita las pantallas justo antes de dormir.',
+'Cuida las comidas: la energía del día empieza en ellas.',
+'Permite que algunos días sean más ligeros que otros.',
+'Celebra los pequeños avances, no solo los grandes logros.',
+'Empieza con hábitos pequeños: cuesta menos mantenerlos.',
+'Vincula un hábito nuevo a algo que ya haces cada día.',
+'Ten paciencia: los hábitos se consolidan con repetición, no con prisa.',
+'Marca tus tareas diarias al momento de hacerlas, no al final del día.',
+'Si fallas un día, retómalo al siguiente sin culpa.',
+'Haz visible tu progreso: ayuda a mantener la constancia.',
+'Elige un horario fijo para tus tareas recurrentes.',
+'Reduce la fricción: deja preparado lo que necesites para el hábito.',
+'Un hábito pequeño hecho todos los días vale más que uno grande hecho una vez.',
+'Revisa cada semana qué hábitos te están funcionando de verdad.',
+'No añadas demasiados hábitos nuevos a la vez.',
+'Asocia cada tarea diaria a un motivo claro por el que la haces.',
+'Deja constancia de tus rachas, motivan a seguir.',
+'Prioriza la constancia sobre la intensidad.',
+'Convierte lo que quieres lograr en una acción diaria concreta.',
+'Empieza el hábito por la versión más pequeña posible.',
+'Revisa tus tareas diarias antes de dormir para no olvidarlas.',
+'Si un hábito ya no te aporta nada, elimínalo sin miedo.',
+'Los primeros días son los más difíciles: no te rindas ahí.',
+'Un buen entorno facilita más los hábitos que la fuerza de voluntad.',
+'Calcula el tiempo real que te llevará algo antes de programarlo.',
+'Añade un margen extra a tus estimaciones de tiempo.',
+'Agenda los eventos en cuanto los sepas, no los dejes en la memoria.',
+'Revisa tu semana en conjunto, no solo día a día.',
+'Evita programar reuniones justo una detrás de otra.',
+'Si algo te lleva menos de 2 minutos, hazlo ya en vez de anotarlo.',
+'Reserva un hueco semanal para tareas administrativas.',
+'No confíes solo en la memoria: todo lo importante va al calendario.',
+'Aprende a decir que no a lo que no encaja en tu semana.',
+'Deja tiempo de sobra antes de una cita importante.',
+'Revisa el día siguiente antes de terminar la jornada de hoy.',
+'Bloquea tiempo para imprevistos: siempre aparece alguno.',
+'Ordena tus tareas por importancia, no solo por urgencia.',
+'Evita programar tu día al minuto: deja margen de reacción.',
+'Un evento sin hora de fin tiende a alargarse más de la cuenta.',
+'Revisa tu agenda al despertar para saber qué te espera.',
+'Prioriza lo que tiene fecha límite sobre lo que puede esperar.',
+'Agrupa los recados o gestiones en un mismo bloque de tiempo.',
+'Si algo se repite cada semana, conviértelo en tarea recurrente.',
+'El tiempo que no planificas también hay que gestionarlo.',
+'Recuerda por qué empezaste cuando algo cueste más de lo normal.',
+'Un pequeño avance hoy vale más que un plan perfecto sin empezar.',
+'Compárate con quien eras ayer, no con los demás.',
+'Los días flojos también cuentan si sigues intentándolo.',
+'Empezar ya es la mitad del camino.',
+'No necesitas motivación para empezar, solo un primer paso pequeño.',
+'Celebra terminar, aunque el resultado no sea perfecto.',
+'Cada tarea completada suma, aunque parezca pequeña.',
+'La constancia gana siempre a la intensidad puntual.',
+'Si hoy rindes menos, mañana es una nueva oportunidad.',
+'Enfócate en el progreso, no solo en la meta final.',
+'Ponte metas que dependan de ti, no de los demás.',
+'Un mal día no borra todo lo bueno que has construido.',
+'Hazlo imperfecto antes que no hacerlo.',
+'Pregúntate qué versión de ti quiere terminar este día satisfecho.',
+'Agradece lo que sí salió bien antes de mirar lo que falta.',
+'Avanza aunque sea despacio: lo importante es no parar del todo.',
+'Convierte los objetivos grandes en pequeñas victorias diarias.',
+'Confía en el proceso, no solo en el resultado inmediato.',
+'Hoy es un buen día para retomar algo que dejaste a medias.',
+'Aprovecha los descansos para moverte un poco.',
+'Cuida tu postura, sobre todo si pasas horas sentado.',
+'Sal a caminar aunque sean solo diez minutos.',
+'No te saltes las comidas por tener prisa.',
+'Estirar el cuello y los hombros ayuda tras horas de pantalla.',
+'Reserva un rato del día para hacer algo de ejercicio.',
+'Ventila el espacio donde trabajas de vez en cuando.',
+'Ajusta la luz de la pantalla para descansar la vista.',
+'Aleja la vista de la pantalla cada cierto tiempo.',
+'Camina mientras hablas por teléfono si puedes.',
+'Un cuerpo descansado piensa con más claridad.',
+'Sube escaleras en vez de usar el ascensor cuando puedas.',
+'Prepara la ropa de deporte la noche anterior si piensas entrenar.',
+'Escucha las señales de cansancio antes de que sean agotamiento.',
+'Beber suficiente agua ayuda a mantener la concentración.',
+'Dedica cinco minutos a estirar al empezar el día.',
+'Evita encadenar muchas horas seguidas sin levantarte.',
+'Cuida las cervicales: revisa la altura de tu pantalla.',
+'Una buena postura al sentarte cuesta poco y se nota mucho.',
+'El movimiento, aunque sea breve, mejora el ánimo del resto del día.',
+'Date permiso para no llegar a todo cada día.',
+'Anota lo que te preocupa para sacarlo de la cabeza.',
+'Una lista de tareas también sirve para liberar la mente.',
+'No compares tu ritmo con el de otra persona.',
+'Está bien pedir ayuda cuando algo se acumula.',
+'Reserva un momento del día solo para ti.',
+'Reconoce cuándo necesitas parar, no solo cuando ya no puedes más.',
+'La productividad no mide tu valor como persona.',
+'Un día tranquilo también es un día bien aprovechado.',
+'Practica decir "hoy no llego" sin sentirte mal por ello.',
+'Simplifica tu lista de tareas si sientes que te desborda.',
+'Habla de lo que te preocupa en vez de guardártelo.',
+'No todos los días necesitan ser productivos al máximo.',
+'Agradece algo bueno de hoy antes de acabar el día.',
+'Desconecta del móvil un rato antes de dormir.',
+'Ordenar el espacio también ayuda a ordenar la cabeza.',
+'Permítete equivocarte: forma parte de avanzar.',
+'Haz una pausa consciente cuando notes que te agobias.',
+'Escribir cómo te sientes ayuda a entenderlo mejor.',
+'Cuídate hoy como cuidarías a alguien que quieres.',
+'Ordena tus notificaciones: no todas merecen interrumpirte.',
+'Revisa el móvil en momentos concretos, no cada minuto.',
+'Cierra las aplicaciones que no estés usando de verdad.',
+'Ten una sola lista de tareas, no varias repartidas.',
+'Haz copias de seguridad de tu información importante.',
+'Ordena tu bandeja de entrada al menos una vez por semana.',
+'Usa recordatorios para lo que no quieras olvidar.',
+'Limita el tiempo de pantalla en apps que no aportan valor.',
+'Automatiza lo repetitivo siempre que puedas.',
+'Guarda los enlaces útiles en un solo sitio, no dispersos.',
+'Revisa tus aplicaciones instaladas de vez en cuando y elimina las que no uses.',
+'Configura tu calendario para que avise antes de cada evento.',
+'Ten un único lugar donde apuntar tareas, no varios a la vez.',
+'Aprovecha la sincronización para no depender de un solo dispositivo.',
+'Dedica un rato a organizar archivos digitales de vez en cuando.',
+'No dejes decenas de pestañas abiertas de un día para otro.',
+'Revisa los permisos de tus aplicaciones de vez en cuando.',
+'Usa el modo no molestar en tus horas de concentración.',
+'Anota tus contraseñas importantes en un lugar seguro, no en cualquier sitio.',
+'La tecnología debería ahorrarte tiempo, no quitártelo.',
+'Agenda también el tiempo para las personas importantes de tu vida.',
+'Responde con calma en vez de con prisa cuando puedas.',
+'Un mensaje breve pero a tiempo vale más que uno largo tarde.',
+'Escucha antes de responder, sobre todo si hay tensión.',
+'Agradece a quien te ayuda, aunque sea con algo pequeño.',
+'Antes de una reunión, ten claro qué necesitas de ella.',
+'Sé claro con lo que necesitas: ahorra malentendidos.',
+'Reserva tiempo para desconectar del trabajo con la gente que quieres.',
+'Una llamada corta puede resolver lo que un chat alarga.',
+'Pregunta cómo está la otra persona antes de ir al grano.',
+'Cumple lo que prometes, aunque sea algo pequeño.',
+'Avisa con tiempo si no vas a poder llegar a algo.',
+'Reserva un hueco en la semana para ver a quien quieres.',
+'Da las gracias de forma concreta, no solo por rutina.',
+'Aclara las dudas en el momento, no las dejes acumular.',
+'Comparte tus planes con quien te acompaña en el día a día.',
+'Una buena conversación vale más que veinte mensajes cruzados.',
+'Reconoce el trabajo de los demás cuando lo veas bien hecho.',
+'Pide lo que necesitas en vez de esperar a que lo adivinen.',
+'Termina el día agradeciendo algo, aunque haya sido complicado.'
+];
+function renderDailyTip(){
+  const todayK=todayKey();
+  const [y,m,d]=todayK.split('-').map(Number);
+  const start=new Date(y,0,0);
+  const diff=new Date(y,m-1,d)-start;
+  const dayOfYear=Math.floor(diff/86400000);
+  $('dailyTip').textContent=DAILY_TIPS[dayOfYear % DAILY_TIPS.length];
+}
+
 /* ---------- Instalar como app (PWA) ---------- */
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 
-/* ---------- Arranque ---------- */
-initAuth();
+/* ---------- Arranque (con comprobación de conexión) ---------- */
+function startApp(){
+  if(!navigator.onLine){
+    $('noInternetScreen').style.display='grid';
+    $('authScreen').style.display='none';
+    $('mainApp').style.display='none';
+    window.addEventListener('online',retryStart,{once:true});
+    return;
+  }
+  $('noInternetScreen').style.display='none';
+  initAuth();
+}
+function retryStart(){
+  $('noInternetScreen').style.display='none';
+  initAuth();
+}
+startApp();
 </script>
 </body>
 </html>
