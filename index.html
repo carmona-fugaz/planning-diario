@@ -60,6 +60,47 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 .sync-pill.offline .dot{background:var(--danger)}
 #offlineBanner{display:none;background:#e0526022;border:1px solid var(--danger);color:var(--danger);padding:10px 16px;border-radius:12px;margin-bottom:16px;font-size:13px}
 #noInternetScreen{position:fixed;inset:0;background:var(--bg);display:none;place-items:center;z-index:60;padding:20px}
+
+/* --- Cumpleaños --- */
+.bday-banner{display:none;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:14px 18px;border-radius:18px;margin-bottom:18px;box-shadow:var(--shadow)}
+.bday-banner .em{font-size:28px;line-height:1}
+.bday-banner .txt{flex:1;min-width:200px;font-weight:700}
+.bday-banner input{padding:9px 11px;border:0;border-radius:10px;background:#fff;color:#182033}
+.bday-banner .x{background:#ffffff33;color:#fff;border-radius:10px;padding:8px 12px}
+.mini-calendar button .dnum{position:relative;z-index:1}
+.mini-calendar button.bday::before,.day-head.bday::before{content:'🎂';position:absolute;inset:0;display:grid;place-items:center;opacity:.4;pointer-events:none;line-height:1}
+.mini-calendar button.bday::before{font-size:22px}
+.day-head.bday::before{font-size:46px}
+.mini-calendar button.bday .dnum{font-weight:900;text-shadow:0 0 4px var(--panel),0 0 2px var(--panel)}
+.mini-calendar button.bday.active .dnum{text-shadow:0 0 4px #0009}
+.day-head{position:relative}
+.day-head>span,.day-head>strong{position:relative;z-index:1}
+.day-head.bday strong{font-weight:900;text-shadow:0 0 5px var(--bg),0 0 3px var(--bg)}
+
+/* --- Horario semanal --- */
+:root{--sline:#1b2033}body.dark{--sline:#cfd5e6}
+.schedule-panel{padding:20px;margin-top:18px}
+.palette{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0 14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.palette .pal-hint{width:100%;font-size:12px;font-weight:700;color:var(--muted)}
+.pal-sw{width:30px;height:30px;border-radius:9px;border:2px solid var(--line);padding:0}
+.pal-sw:hover{transform:scale(1.1)}
+.pal-sw.on{outline:3px solid var(--primary);outline-offset:2px}
+.pal-none{padding:6px 10px;font-size:12px;border-radius:9px;background:var(--panel);color:var(--text);border:2px solid var(--line)}
+.pal-none.on{border-color:var(--primary)}
+.palette.disabled .pal-sw{opacity:.45}
+.sched-wrap{overflow-x:auto;padding-bottom:6px}
+table.sched{border-collapse:collapse;width:100%;min-width:560px}
+.sched td.c{border:2px solid var(--sline);padding:0;text-align:center;vertical-align:middle;min-width:88px;background:var(--panel)}
+.sched td.lead{background:var(--bg);font-weight:800}
+.sched td.head{font-size:16px}
+.sched td.sel{outline:3px solid var(--primary);outline-offset:-3px}
+.sched .ce{min-height:38px;padding:9px 8px;outline:none;word-break:break-word;cursor:text}
+.sched .ce:empty::before{content:attr(data-ph);opacity:.45;pointer-events:none}
+.sched td.ctl{border:0;padding:3px 2px;text-align:center;white-space:nowrap}
+.sched td.ctl-r{width:1%;padding-left:6px}
+.mini-btn{width:24px;height:24px;border-radius:7px;background:var(--bg);color:var(--text);border:1px solid var(--line);font-size:14px;line-height:1;padding:0;margin:0 1px}
+.mini-btn:hover{border-color:var(--primary)}
+.mini-btn.del:hover{color:var(--danger);border-color:var(--danger)}
 </style>
 </head>
 <body>
@@ -95,12 +136,19 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 </div>
 
 <div class="app" id="mainApp" style="display:none">
+<div class="bday-banner" id="bdayBanner">
+  <span class="em">🎂</span>
+  <span class="txt" id="bdayText">¡Ingresa tu cumpleaños!</span>
+  <input type="date" id="bdayInput" aria-label="Fecha de tu cumpleaños">
+  <button type="button" class="x" id="bdayClose">Cerrar</button>
+</div>
 <header class="topbar">
   <div class="brand"><div class="logo">✦</div><div><h1>Mi Día</h1><div class="muted">Organiza tu tiempo, cuida tu energía.</div></div></div>
   <div class="actions">
 <span class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncLabel">Sincronizado</span></span>
 <button class="btn" id="themeBtn">☾ Tema</button>
 <button class="btn" id="colorBtn">🎨 Colores</button>
+<button class="btn" id="bdayBtn" title="Cambiar mi cumpleaños">🎂 Cumpleaños</button>
 <button class="btn" id="exportBtn">⇩ Copia de seguridad</button>
 <button class="btn" id="logoutBtn">Salir (<span id="userEmail"></span>)</button>
 <button class="btn primary" id="newEventBtn">＋ Evento</button>
@@ -138,6 +186,18 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 <section class="task-panel panel"><div class="calendar-head"><div><h3 style="margin-bottom:2px">✓ Tareas diarias</h3><div class="muted" style="font-size:12px" id="taskDateLabel"></div></div><button class="btn primary" id="newTaskBtn">＋ Tarea</button></div><div id="tasks"></div></section>
 <section class="event-panel panel"><div class="calendar-head"><h3>Agenda semanal</h3></div><div id="dayEvents"></div></section>
 </div>
+<section class="schedule-panel panel" id="scheduleSection">
+ <div class="calendar-head">
+  <div><h3 style="margin-bottom:2px">🗓️ Horario semanal</h3><div class="muted" style="font-size:12px">Escribe en cualquier celda. Usa <b>+</b> para insertar una fila o columna a continuación y <b>×</b> para eliminarla.</div></div>
+  <div class="actions"><button class="btn" id="addColBtn">＋ Columna</button><button class="btn primary" id="addRowBtn">＋ Fila</button></div>
+ </div>
+ <div class="palette" id="palette">
+  <div class="pal-hint" id="palHint"></div>
+  <button type="button" class="pal-none" id="palNone">Sin color</button>
+  <div id="palSwatches" style="display:contents"></div>
+ </div>
+ <div class="sched-wrap"><table class="sched" id="schedTable"></table></div>
+</section>
 </main></div></div>
 
 <div class="modal" id="eventModal"><div class="modal-box">
@@ -229,7 +289,7 @@ function setSyncStatus(state){
   else if(state==='syncing'){pill.classList.remove('offline');label.textContent='Sincronizando…'}
   else{pill.classList.add('offline');label.textContent='Sin conexión';banner.style.display='block'}
 }
-window.addEventListener('online',()=>{setSyncStatus('syncing');loadData();});
+window.addEventListener('online',()=>{setSyncStatus('syncing');loadData();pushIfDirty();});
 window.addEventListener('offline',()=>setSyncStatus('offline'));
 
 /* ---------- Autenticación ---------- */
@@ -265,11 +325,15 @@ $('authForm').onsubmit=async(e)=>{
 };
 
 $('logoutBtn').onclick=async()=>{
+  if(pushTimer){try{await pushCloud()}catch(e){}}
   if(sb) await sb.auth.signOut();
   showAuthScreen();
 };
 
 function showAuthScreen(){
+  profileUid=null;clearTimeout(pushTimer);pushTimer=null;birthday=null;
+  $('bdayBanner').style.display='none';
+  schedule=defaultSchedule();selCell=null;selTd=null;renderSchedule();
   $('authScreen').style.display='grid';
   $('mainApp').style.display='none';
   if(realtimeChannel){sb.removeChannel(realtimeChannel);realtimeChannel=null}
@@ -281,6 +345,7 @@ function showApp(user){
   $('userEmail').textContent=user.email;
   loadData();
   subscribeRealtime();
+  setTimeout(()=>loadProfile(user),0);
 }
 
 async function initAuth(){
@@ -294,6 +359,7 @@ async function initAuth(){
     $('mainApp').style.display='block';
     $('userEmail').textContent='modo local';
     $('logoutBtn').style.display='none';
+    loadProfile(null);
     render();
     return;
   }
@@ -303,6 +369,7 @@ async function initAuth(){
     else showAuthScreen();
 
     sb.auth.onAuthStateChange((event,session)=>{
+      if(event==='USER_UPDATED'){if(session)currentUser=session.user;return}
       if(session) showApp(session.user);
       else showAuthScreen();
     });
@@ -395,7 +462,7 @@ function renderMini(){
  $('monthLabel').textContent=new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(viewMonth);
  const first=new Date(viewMonth.getFullYear(),viewMonth.getMonth(),1), start=monday(first);
  $('miniCalendar').innerHTML='';
- for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let b=document.createElement('button');const hasEvent=events.some(e=>e.date===dateKey(d));b.innerHTML=String(d.getDate())+(hasEvent?'<span class="event-dot"></span>':'');if(d.getMonth()!==viewMonth.getMonth())b.style.opacity='.3';if(dateKey(d)===dateKey(selected))b.classList.add('active');if(dateKey(d)===todayKey())b.classList.add('today');b.onclick=()=>{selected=d;render()};$('miniCalendar').appendChild(b)}
+ for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let b=document.createElement('button');const hasEvent=events.some(e=>e.date===dateKey(d));b.innerHTML='<span class="dnum">'+d.getDate()+'</span>'+(hasEvent?'<span class="event-dot"></span>':'');if(isBirthday(d))b.classList.add('bday');if(d.getMonth()!==viewMonth.getMonth())b.style.opacity='.3';if(dateKey(d)===dateKey(selected))b.classList.add('active');if(dateKey(d)===todayKey())b.classList.add('today');b.onclick=()=>{selected=d;render()};$('miniCalendar').appendChild(b)}
 }
 function renderHeader(){
  $('selectedDateLabel').textContent=fmtDate(selected);
@@ -433,7 +500,8 @@ function renderCalendar(){
    const wrapper=document.createElement('div'); wrapper.className='day-column';
    const head=document.createElement('div');
    head.className='day-head'+(dateKey(d)===dateKey(selected)?' selected':'');
-   head.innerHTML=`${['L','M','X','J','V','S','D'][day]}<strong>${d.getDate()}</strong>`;
+   head.innerHTML=`<span>${['L','M','X','J','V','S','D'][day]}</span><strong>${d.getDate()}</strong>`;
+   if(isBirthday(d))head.classList.add('bday');
    head.onclick=()=>{selected=new Date(d);render()};
    wrapper.appendChild(head);
    const box=document.createElement('div'); box.className='day-events';
@@ -793,6 +861,253 @@ function renderDailyTip(){
   const dayOfYear=Math.floor(diff/86400000);
   $('dailyTip').textContent=DAILY_TIPS[dayOfYear % DAILY_TIPS.length];
 }
+
+/* ---------- Perfil: cumpleaños + horario semanal ---------- */
+/* Se guardan en los metadatos del usuario de Supabase (user_metadata.miDia),
+   así se sincronizan entre dispositivos sin crear tablas nuevas. */
+// OJO: no cambies el orden de esta paleta (los colores se guardan por posición)
+const PALETTE=[
+['Blanco','#ffffff'],['Negro','#000000'],['Gris','#8e8e93'],['Gris claro','#d6d6d6'],
+['Rojo','#e53935'],['Granate','#7f1d1d'],['Rosa','#ff69b4'],['Rosa claro','#f9c6dc'],
+['Fucsia','#d81b8c'],['Morado','#7c1fe0'],['Lila','#c4a5f7'],['Índigo','#3f51b5'],
+['Azul','#4169e1'],['Azul marino','#10214f'],['Azul claro','#64b5f6'],['Celeste','#bfe6fb'],
+['Turquesa','#26c6da'],['Verde azulado','#00897b'],['Menta','#6fd9b2'],['Verde','#2e9e4f'],
+['Verde oscuro','#14532d'],['Lima','#adff2f'],['Verde claro','#c8e6a5'],['Oliva','#6b6b00'],
+['Amarillo','#ffe600'],['Crema','#fff3b0'],['Naranja','#fb8c00'],['Salmón','#ffa27a'],
+['Marrón','#795548'],['Beige','#e8d5b5']
+];
+const MAX_R=20, MAX_C=10, MAX_LEN=80;
+let birthday=null, profileUid=null, pushTimer=null, bdayTimer=null;
+let schedule=defaultSchedule(), selCell=null, selTd=null;
+const cellTds=new Map();
+
+function newCell(t='',c=0){return {t,c}}
+function defaultSchedule(){
+  const days=['Lunes','Martes','Miércoles','Jueves','Viernes'];
+  const hours=['8:00-9:00','9:00-10:00','10:00-11:00','11:00-11:30','11:30-12:30','12:30-13:30','13:30-14:30'];
+  const g=[[newCell('Horas'),...days.map(d=>newCell(d))]];
+  hours.forEach(h=>{const rec=h==='11:00-11:30';g.push([newCell(h),...days.map(()=>rec?newCell('RECREO',19):newCell())])});
+  return g;
+}
+function encodeSchedule(){return schedule.map(r=>r.map(x=>(!x.c&&!x.t)?'':x.c+'|'+x.t))}
+function decodeSchedule(s){
+  if(!Array.isArray(s)||s.length<2||s.length>MAX_R+1) return null;
+  const w=Array.isArray(s[0])?s[0].length:0;
+  if(w<2||w>MAX_C+1) return null;
+  const g=[];
+  for(const r of s){
+    if(!Array.isArray(r)||r.length!==w) return null;
+    g.push(r.map(v=>{
+      v=String(v==null?'':v);const i=v.indexOf('|');
+      if(i<0) return newCell(v,0);
+      let c=parseInt(v.slice(0,i),10); if(!(c>=0&&c<=PALETTE.length)) c=0;
+      return newCell(v.slice(i+1),c);
+    }));
+  }
+  return g;
+}
+
+/* ----- Persistencia (local + nube) ----- */
+function readLocalProfile(id){try{return JSON.parse(localStorage.getItem('miDiaProfile:'+id)||'null')}catch(e){return null}}
+function writeLocalProfile(dirty){
+  if(!profileUid) return;
+  try{localStorage.setItem('miDiaProfile:'+profileUid,JSON.stringify({b:birthday,s:encodeSchedule(),d:!!dirty}))}catch(e){}
+}
+function persistSoon(){
+  if(!profileUid) return;
+  writeLocalProfile(true);
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(pushCloud,1000);
+}
+async function pushCloud(){
+  clearTimeout(pushTimer);pushTimer=null;
+  if(!profileUid) return;
+  if(!configured||!sb||!currentUser||profileUid==='local'){writeLocalProfile(false);return}
+  if(!navigator.onLine) return;
+  const payload={b:birthday,s:encodeSchedule()}, snap=JSON.stringify(payload);
+  setSyncStatus('syncing');
+  try{
+    const {error}=await sb.auth.updateUser({data:{miDia:payload}});
+    if(error) throw error;
+    if(JSON.stringify({b:birthday,s:encodeSchedule()})===snap) writeLocalProfile(false);
+    else persistSoon();
+    setSyncStatus('online');
+  }catch(err){
+    console.error('Mi Día — no se pudo guardar el perfil:',err);
+    setSyncStatus(navigator.onLine?'online':'offline');
+  }
+}
+function pushIfDirty(){
+  if(!profileUid) return;
+  const l=readLocalProfile(profileUid);
+  if(l&&l.d) pushCloud();
+}
+async function loadProfile(user){
+  const id=user?user.id:'local';
+  if(profileUid===id) return;
+  profileUid=id;
+  const local=readLocalProfile(id);
+  let server=null, fetched=false;
+  if(user&&configured&&sb){
+    try{
+      if(!navigator.onLine) throw new Error('offline');
+      const {data,error}=await sb.auth.getUser();
+      if(error) throw error;
+      server=((data.user&&data.user.user_metadata)||{}).miDia||null;fetched=true;
+    }catch(e){server=(user.user_metadata||{}).miDia||null}
+    if(profileUid!==id) return; // se cerró sesión mientras cargaba
+  }
+  const has=p=>p&&(p.b||p.s);
+  let src={}, push=false;
+  if(local&&local.d){src=local;push=true}
+  else if(has(server)) src=server;
+  else if(has(local)){src=local;push=!!user&&fetched}
+  birthday=(src.b&&/^\d{4}-\d{2}-\d{2}$/.test(src.b))?src.b:null;
+  schedule=decodeSchedule(src.s)||defaultSchedule();
+  selCell=null;selTd=null;
+  writeLocalProfile(push);
+  renderSchedule();updateBdayBanner(false);render();
+  if(push) pushCloud();
+}
+
+/* ----- Cumpleaños ----- */
+function isBirthday(d){return !!birthday&&dateKey(d).slice(5)===birthday.slice(5)}
+function updateBdayBanner(forceOpen){
+  clearTimeout(bdayTimer);
+  const inp=$('bdayInput');
+  inp.max=todayKey();inp.min='1900-01-01';inp.value=birthday||'';inp.style.display='';
+  $('bdayText').textContent=birthday?'Cambia la fecha de tu cumpleaños:':'¡Ingresa tu cumpleaños! Lo marcaremos con una tarta en tu calendario.';
+  $('bdayClose').style.display=birthday?'':'none';
+  $('bdayBanner').style.display=(forceOpen||(!birthday&&profileUid))?'flex':'none';
+}
+$('bdayBtn').onclick=()=>updateBdayBanner(true);
+$('bdayClose').onclick=()=>updateBdayBanner(false);
+$('bdayInput').onchange=()=>{
+  const v=$('bdayInput').value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v)||+v.slice(0,4)<1900||v>todayKey()) return; // ignora fechas a medio escribir
+  birthday=v;persistSoon();
+  viewMonth=new Date(viewMonth.getFullYear(),parseDate(v).getMonth(),1);
+  render();
+  $('bdayText').textContent='¡Guardado! Tu cumpleaños quedará marcado en el calendario.';
+  $('bdayInput').style.display='none';$('bdayClose').style.display='none';
+  clearTimeout(bdayTimer);bdayTimer=setTimeout(()=>updateBdayBanner(false),2500);
+};
+
+/* ----- Horario semanal ----- */
+function textOn(hex){
+  const n=parseInt(hex.slice(1),16),f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};
+  const L=.2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(n&255);
+  return L<0.18?'#ffffff':'#000000'; // fondo oscuro -> letra blanca; claro -> negra
+}
+function applyCellStyle(td,cell){
+  if(cell.c>0){const hex=PALETTE[cell.c-1][1];td.style.background=hex;td.style.color=textOn(hex)}
+  else{td.style.background='';td.style.color=''}
+}
+function caretToEnd(el){const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+function selectCell(cell,td){
+  if(selTd) selTd.classList.remove('sel');
+  selCell=cell;selTd=td;td.classList.add('sel');updatePalette();
+}
+function makeCell(r,c){
+  const cell=schedule[r][c], td=document.createElement('td');
+  td.className='c'+(r===0||c===0?' lead':'')+(r===0?' head':'');
+  applyCellStyle(td,cell);
+  const ce=document.createElement('div');
+  ce.className='ce';ce.contentEditable='true';ce.spellcheck=false;
+  ce.dataset.ph=r===0?'Título':(c===0?'Hora':'');
+  ce.textContent=cell.t;
+  ce.addEventListener('focus',()=>selectCell(cell,td));
+  ce.addEventListener('input',()=>{
+    let v=ce.textContent;
+    if(v.length>MAX_LEN){v=v.slice(0,MAX_LEN);ce.textContent=v;caretToEnd(ce)}
+    if(!v) ce.innerHTML='';
+    cell.t=v;persistSoon();
+  });
+  ce.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ce.blur()}});
+  ce.addEventListener('paste',e=>{
+    e.preventDefault();
+    const t=(e.clipboardData||window.clipboardData).getData('text').replace(/\s*[\r\n]+\s*/g,' ');
+    document.execCommand('insertText',false,t);
+  });
+  td.addEventListener('mousedown',e=>{if(e.target===td){e.preventDefault();ce.focus()}});
+  td.appendChild(ce);cellTds.set(cell,td);
+  return td;
+}
+function renderSchedule(){
+  const table=$('schedTable');table.innerHTML='';cellTds.clear();
+  const R=schedule.length,C=schedule[0].length;
+  const mk=(txt,title,cls,fn)=>{const b=document.createElement('button');b.type='button';b.className='mini-btn '+(cls||'');b.textContent=txt;b.title=title;b.setAttribute('aria-label',title);b.onclick=fn;return b};
+  const ctl=document.createElement('tr');
+  for(let c=0;c<C;c++){
+    const td=document.createElement('td');td.className='ctl';
+    td.appendChild(mk('+',c===0?'Insertar columna al principio':'Insertar columna a la derecha','',()=>insertCol(c)));
+    if(c>0) td.appendChild(mk('×','Eliminar columna','del',()=>delCol(c)));
+    ctl.appendChild(td);
+  }
+  ctl.appendChild(document.createElement('td'));
+  table.appendChild(ctl);
+  for(let r=0;r<R;r++){
+    const tr=document.createElement('tr');
+    for(let c=0;c<C;c++) tr.appendChild(makeCell(r,c));
+    const td=document.createElement('td');td.className='ctl ctl-r';
+    td.appendChild(mk('+',r===0?'Insertar fila al principio':'Insertar fila debajo','',()=>insertRow(r)));
+    if(r>0) td.appendChild(mk('×','Eliminar fila','del',()=>delRow(r)));
+    tr.appendChild(td);table.appendChild(tr);
+  }
+  if(selCell&&cellTds.has(selCell)){selTd=cellTds.get(selCell);selTd.classList.add('sel')}
+  else{selCell=null;selTd=null}
+  updatePalette();
+}
+function focusCell(cell){const td=cellTds.get(cell);if(td) td.querySelector('.ce').focus()}
+function hasText(cells){return cells.some(x=>x.t.trim())}
+function insertCol(after){
+  if(schedule[0].length-1>=MAX_C){alert('Máximo '+MAX_C+' columnas.');return}
+  const made=schedule.map(row=>{const x=newCell();row.splice(after+1,0,x);return x});
+  persistSoon();renderSchedule();focusCell(made[0]);
+}
+function insertRow(after){
+  if(schedule.length-1>=MAX_R){alert('Máximo '+MAX_R+' filas.');return}
+  const row=schedule[0].map(()=>newCell());
+  schedule.splice(after+1,0,row);
+  persistSoon();renderSchedule();focusCell(row[0]);
+}
+function delCol(c){
+  if(schedule[0].length<=2){alert('Debe quedar al menos una columna.');return}
+  if(hasText(schedule.map(r=>r[c]))&&!confirm('¿Eliminar esta columna y su contenido?')) return;
+  schedule.forEach(r=>r.splice(c,1));
+  persistSoon();renderSchedule();
+}
+function delRow(r){
+  if(schedule.length<=2){alert('Debe quedar al menos una fila.');return}
+  if(hasText(schedule[r])&&!confirm('¿Eliminar esta fila y su contenido?')) return;
+  schedule.splice(r,1);
+  persistSoon();renderSchedule();
+}
+$('addRowBtn').onclick=()=>insertRow(schedule.length-1);
+$('addColBtn').onclick=()=>insertCol(schedule[0].length-1);
+
+/* ----- Paleta de 30 colores ----- */
+function setColor(idx){
+  if(!selCell) return;
+  selCell.c=idx;applyCellStyle(selTd,selCell);
+  persistSoon();updatePalette();
+}
+function updatePalette(){
+  $('palette').classList.toggle('disabled',!selCell);
+  $('palHint').textContent=selCell?'Elige un color para la celda seleccionada:':'Toca una celda del horario y elige su color:';
+  document.querySelectorAll('#palSwatches .pal-sw').forEach(b=>b.classList.toggle('on',!!selCell&&+b.dataset.idx===selCell.c));
+  $('palNone').classList.toggle('on',!!selCell&&selCell.c===0);
+}
+(function buildPalette(){
+  const box=$('palSwatches');
+  PALETTE.forEach(([name,hex],i)=>{
+    const b=document.createElement('button');b.type='button';b.className='pal-sw';
+    b.style.background=hex;b.title=name;b.setAttribute('aria-label',name);b.dataset.idx=i+1;
+    b.onclick=()=>setColor(i+1);box.appendChild(b);
+  });
+  $('palNone').onclick=()=>setColor(0);
+  renderSchedule();
+})();
 
 /* ---------- Instalar como app (PWA) ---------- */
 if('serviceWorker' in navigator){
