@@ -30,6 +30,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 .day-event-card{display:block;margin:5px 0;padding:9px 10px;border-radius:12px;color:#fff;box-shadow:0 5px 12px #0001;cursor:pointer;font-size:12px}
 .day-event-card strong{display:block;font-size:13px;margin-bottom:3px}
 .day-event-time{font-size:11px;opacity:.95}
+.field.allday-field{flex-direction:row;align-items:center;gap:10px;cursor:pointer}.field.allday-field input{width:18px;height:18px;padding:0;accent-color:var(--primary);cursor:pointer}.field.allday-field label{font-size:14px;color:var(--text);cursor:pointer;margin:0}.field.time-off{opacity:.45}.allday-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;background:#ffffff33}
 .day-event-notes{font-size:10px;opacity:.86;margin-top:4px}
 .task-panel{position:sticky;top:18px;align-self:start}
 @media(max-width:1000px){.day-columns{min-width:820px}.task-panel{position:static}}
@@ -205,7 +206,8 @@ table.sched{border-collapse:collapse;width:100%;min-width:560px}
 <form id="eventForm"><input type="hidden" id="eventId"><div class="form-grid">
 <div class="field full"><label>Título</label><input id="eventTitle" required placeholder="Ej. Estudiar, gimnasio, reunión..."></div>
 <div class="field"><label>Fecha</label><input type="date" id="eventDate" required></div><div class="field"><label>Color</label><input type="color" id="eventColor" value="#6757e8"></div>
-<div class="field"><label>Desde</label><input type="time" id="eventStart" required value="09:00"></div><div class="field"><label>Hasta</label><input type="time" id="eventEnd" required value="10:00"></div>
+<div class="field full allday-field"><input type="checkbox" id="eventAllDay"><label for="eventAllDay">Todo el día</label></div>
+<div class="field" id="eventStartField"><label>Desde</label><input type="time" id="eventStart" required value="09:00"></div><div class="field" id="eventEndField"><label>Hasta</label><input type="time" id="eventEnd" required value="10:00"></div>
 <div class="field full"><label>Notas</label><textarea id="eventNotes" rows="3" placeholder="Detalles opcionales..."></textarea></div>
 </div><div class="actions" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn danger" id="deleteEventBtn" style="display:none">🗑 Eliminar</button><div class="actions" style="margin-left:auto"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Guardar evento</button></div></div></form>
 </div></div>
@@ -264,6 +266,15 @@ const colors=['#6757e8','#e05b83','#1da88a','#e39a35','#3985d7','#9b59b6'];
 
 /* ---------- Utilidades de fecha (España) ---------- */
 function pad(n){return String(n).padStart(2,'0')}
+/* Evento de "Todo el día": se guarda como 00:00 – 23:59 (no requiere cambios en la base de datos) */
+const ALLDAY_START='00:00', ALLDAY_END='23:59';
+function isAllDay(e){return e.start===ALLDAY_START && e.end===ALLDAY_END}
+function eventTimeLabel(e){return isAllDay(e)?'Todo el día':`${e.start} – ${e.end}`}
+function syncAllDayUI(){
+  const on=$('eventAllDay').checked;
+  $('eventStart').disabled=on;$('eventEnd').disabled=on;
+  $('eventStartField').classList.toggle('time-off',on);$('eventEndField').classList.toggle('time-off',on);
+}
 function dateKey(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
 function parseDate(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)}
 function todayKey(){return new Intl.DateTimeFormat('en-CA',{timeZone:TZ}).format(new Date())}
@@ -486,7 +497,7 @@ function renderStats(){
  const todayK=todayKey();
  const nowTime=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:TZ}).format(new Date()).replace('.',':');
  const upcoming=events
-   .filter(e=>e.date>todayK || (e.date===todayK && e.start>=nowTime))
+   .filter(e=>e.date>todayK || (e.date===todayK && (isAllDay(e) || e.start>=nowTime)))
    .sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))
    .slice(0,3);
  const box=$('nextEvents');
@@ -494,7 +505,8 @@ function renderStats(){
    box.innerHTML='<span class="muted">Sin eventos pendientes</span>';
  }else{
    box.innerHTML=upcoming.map(e=>{
-     const when=e.date===todayK?`Hoy · ${e.start}`:`${fmtDate(parseDate(e.date),{weekday:'short',day:'numeric',month:'short'})} · ${e.start}`;
+     const t=isAllDay(e)?'Todo el día':e.start;
+     const when=e.date===todayK?`Hoy · ${t}`:`${fmtDate(parseDate(e.date),{weekday:'short',day:'numeric',month:'short'})} · ${t}`;
      return `<div class="ne-item"><strong>${e.title}</strong><span class="ne-when">${when}</span></div>`;
    }).join('');
  }
@@ -516,7 +528,7 @@ function renderCalendar(){
      const card=document.createElement('div');
      card.className='day-event-card';
      card.style.background=e.color||colors[0];
-     card.innerHTML=`<strong>${e.title}</strong><div class="day-event-time">${e.start} – ${e.end}</div>${e.notes?`<div class="day-event-notes">${e.notes}</div>`:''}`;
+     card.innerHTML=`<strong>${e.title}</strong><div class="day-event-time">${isAllDay(e)?'<span class="allday-tag">Todo el día</span>':`${e.start} – ${e.end}`}</div>${e.notes?`<div class="day-event-notes">${e.notes}</div>`:''}`;
      card.onclick=()=>editEvent(e.id);
      box.appendChild(card);
    });
@@ -575,7 +587,7 @@ function renderWeeklyAgenda(){
 function render(){renderMini();renderHeader();renderStats();renderCalendar();renderTasks();renderWeeklyAgenda();renderDailyTip()}
 function editEvent(id){
  const e=events.find(x=>x.id===id);if(!e)return;
- $('eventModalTitle').textContent='Editar evento';$('eventId').value=e.id;$('eventTitle').value=e.title;$('eventDate').value=e.date;$('eventColor').value=e.color;$('eventStart').value=e.start;$('eventEnd').value=e.end;$('eventNotes').value=e.notes||'';$('deleteEventBtn').style.display='';openModal('eventModal')
+ $('eventModalTitle').textContent='Editar evento';$('eventId').value=e.id;$('eventTitle').value=e.title;$('eventDate').value=e.date;$('eventColor').value=e.color;$('eventAllDay').checked=isAllDay(e);$('eventStart').value=isAllDay(e)?'09:00':e.start;$('eventEnd').value=isAllDay(e)?'10:00':e.end;syncAllDayUI();$('eventNotes').value=e.notes||'';$('deleteEventBtn').style.display='';openModal('eventModal')
 }
 
 /* ---------- Copia de seguridad manual (JSON) ---------- */
@@ -594,7 +606,8 @@ $('eventForm').onsubmit=async(e)=>{
   e.preventDefault();
   let id=$('eventId').value||crypto.randomUUID();
   let obj={id,title:$('eventTitle').value.trim(),date:$('eventDate').value,color:$('eventColor').value,start:$('eventStart').value,end:$('eventEnd').value,notes:$('eventNotes').value.trim()};
-  if(obj.end<=obj.start){alert('La hora de finalización debe ser posterior a la de inicio.');return}
+  if($('eventAllDay').checked){obj.start=ALLDAY_START;obj.end=ALLDAY_END}
+  else if(obj.end<=obj.start){alert('La hora de finalización debe ser posterior a la de inicio.');return}
   closeModals();
   selected=parseDate(obj.date);viewMonth=new Date(selected.getFullYear(),selected.getMonth(),1);
   await saveEvent(obj);
@@ -607,7 +620,8 @@ $('taskForm').onsubmit=async(e)=>{
   closeModals();
   await createTask(title,$('taskPriority').value);
 };
-$('newEventBtn').onclick=()=>{$('eventForm').reset();$('eventId').value='';$('deleteEventBtn').style.display='none';$('eventDate').value=dateKey(selected);$('eventModalTitle').textContent='Nuevo evento';openModal('eventModal')}
+$('newEventBtn').onclick=()=>{$('eventForm').reset();syncAllDayUI();$('eventId').value='';$('deleteEventBtn').style.display='none';$('eventDate').value=dateKey(selected);$('eventModalTitle').textContent='Nuevo evento';openModal('eventModal')}
+$('eventAllDay').onchange=syncAllDayUI;
 $('deleteEventBtn').onclick=async()=>{
   const id=$('eventId').value;if(!id) return;
   const ev=events.find(x=>x.id===id);
