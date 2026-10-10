@@ -30,7 +30,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{ma
 .day-event-card{display:block;margin:5px 0;padding:9px 10px;border-radius:12px;color:#fff;box-shadow:0 5px 12px #0001;cursor:pointer;font-size:12px}
 .day-event-card strong{display:block;font-size:13px;margin-bottom:3px}
 .day-event-time{font-size:11px;opacity:.95}
-.field.allday-field{flex-direction:row;align-items:center;gap:10px;cursor:pointer}.field.allday-field input{width:18px;height:18px;padding:0;accent-color:var(--primary);cursor:pointer}.field.allday-field label{font-size:14px;color:var(--text);cursor:pointer;margin:0}.field.time-off{opacity:.45}.allday-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;background:#ffffff33}
+.field.allday-field{flex-direction:row;align-items:center;gap:10px;cursor:pointer}.field.allday-field input{width:18px;height:18px;padding:0;accent-color:var(--primary);cursor:pointer}.field.allday-field label{font-size:14px;color:var(--text);cursor:pointer;margin:0}.field.time-off{opacity:.45}#eventColor{font-weight:600;color:#fff;border-color:transparent;cursor:pointer}#eventColor option{color:#fff;font-weight:600}.allday-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;background:#ffffff33}
 .day-event-notes{font-size:10px;opacity:.86;margin-top:4px}
 .task-panel{position:sticky;top:18px;align-self:start}
 @media(max-width:1000px){.day-columns{min-width:820px}.task-panel{position:static}}
@@ -205,7 +205,7 @@ table.sched{border-collapse:collapse;width:100%;min-width:560px}
 <div class="modal-head"><h3 id="eventModalTitle">Nuevo evento</h3><button class="close" data-close>×</button></div>
 <form id="eventForm"><input type="hidden" id="eventId"><div class="form-grid">
 <div class="field full"><label>Título</label><input id="eventTitle" required placeholder="Ej. Estudiar, gimnasio, reunión..."></div>
-<div class="field"><label>Fecha</label><input type="date" id="eventDate" required></div><div class="field"><label>Color</label><input type="color" id="eventColor" value="#6757e8"></div>
+<div class="field"><label>Fecha</label><input type="date" id="eventDate" required></div><div class="field"><label>Color</label><select id="eventColor"></select></div>
 <div class="field full allday-field"><input type="checkbox" id="eventAllDay"><label for="eventAllDay">Todo el día</label></div>
 <div class="field" id="eventStartField"><label>Desde</label><input type="time" id="eventStart" required value="09:00"></div><div class="field" id="eventEndField"><label>Hasta</label><input type="time" id="eventEnd" required value="10:00"></div>
 <div class="field full"><label>Notas</label><textarea id="eventNotes" rows="3" placeholder="Detalles opcionales..."></textarea></div>
@@ -263,6 +263,30 @@ let tasks=[];  // {id,title,priority,completions}
 let currentUser=null;
 let realtimeChannel=null;
 const colors=['#6757e8','#e05b83','#1da88a','#e39a35','#3985d7','#9b59b6'];
+/* Paleta de 15 colores para eventos (todos con buen contraste con texto blanco) */
+const EVENT_COLORS=[
+  ['#6757e8','Violeta'],['#e05b83','Rosa'],['#1da88a','Verde azulado'],['#e39a35','Naranja'],['#3985d7','Azul'],
+  ['#9b59b6','Púrpura'],['#d64545','Rojo'],['#3f9e4d','Verde'],['#14919b','Turquesa'],['#3f51b5','Índigo'],
+  ['#c2338f','Magenta'],['#8d6040','Marrón'],['#6b7280','Gris'],['#7a9a1e','Verde lima'],['#ee6c4d','Coral']
+];
+(function buildEventColorSelect(){
+  const sel=document.getElementById('eventColor');
+  EVENT_COLORS.forEach(([hex,name])=>{
+    const o=document.createElement('option');o.value=hex;o.textContent=name;o.style.background=hex;sel.appendChild(o);
+  });
+  sel.onchange=paintEventColor;
+})();
+function paintEventColor(){const sel=document.getElementById('eventColor');sel.style.background=sel.value}
+function setEventColor(c){
+  const sel=document.getElementById('eventColor');
+  sel.querySelectorAll('option[data-custom]').forEach(o=>o.remove());
+  c=(c||EVENT_COLORS[0][0]).toLowerCase();
+  if(![...sel.options].some(o=>o.value.toLowerCase()===c)){
+    /* evento antiguo con un color que no está en la paleta: se conserva como "Personalizado" */
+    const o=document.createElement('option');o.value=c;o.textContent='Personalizado';o.style.background=c;o.dataset.custom='1';sel.appendChild(o);
+  }
+  sel.value=c;paintEventColor();
+}
 
 /* ---------- Utilidades de fecha (España) ---------- */
 function pad(n){return String(n).padStart(2,'0')}
@@ -587,7 +611,7 @@ function renderWeeklyAgenda(){
 function render(){renderMini();renderHeader();renderStats();renderCalendar();renderTasks();renderWeeklyAgenda();renderDailyTip()}
 function editEvent(id){
  const e=events.find(x=>x.id===id);if(!e)return;
- $('eventModalTitle').textContent='Editar evento';$('eventId').value=e.id;$('eventTitle').value=e.title;$('eventDate').value=e.date;$('eventColor').value=e.color;$('eventAllDay').checked=isAllDay(e);$('eventStart').value=isAllDay(e)?'09:00':e.start;$('eventEnd').value=isAllDay(e)?'10:00':e.end;syncAllDayUI();$('eventNotes').value=e.notes||'';$('deleteEventBtn').style.display='';openModal('eventModal')
+ $('eventModalTitle').textContent='Editar evento';$('eventId').value=e.id;$('eventTitle').value=e.title;$('eventDate').value=e.date;setEventColor(e.color);$('eventAllDay').checked=isAllDay(e);$('eventStart').value=isAllDay(e)?'09:00':e.start;$('eventEnd').value=isAllDay(e)?'10:00':e.end;syncAllDayUI();$('eventNotes').value=e.notes||'';$('deleteEventBtn').style.display='';openModal('eventModal')
 }
 
 /* ---------- Copia de seguridad manual (JSON) ---------- */
@@ -620,7 +644,7 @@ $('taskForm').onsubmit=async(e)=>{
   closeModals();
   await createTask(title,$('taskPriority').value);
 };
-$('newEventBtn').onclick=()=>{$('eventForm').reset();syncAllDayUI();$('eventId').value='';$('deleteEventBtn').style.display='none';$('eventDate').value=dateKey(selected);$('eventModalTitle').textContent='Nuevo evento';openModal('eventModal')}
+$('newEventBtn').onclick=()=>{$('eventForm').reset();syncAllDayUI();setEventColor(EVENT_COLORS[0][0]);$('eventId').value='';$('deleteEventBtn').style.display='none';$('eventDate').value=dateKey(selected);$('eventModalTitle').textContent='Nuevo evento';openModal('eventModal')}
 $('eventAllDay').onchange=syncAllDayUI;
 $('deleteEventBtn').onclick=async()=>{
   const id=$('eventId').value;if(!id) return;

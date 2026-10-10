@@ -1,4 +1,4 @@
-const CACHE = 'mi-dia-v1.01';
+const CACHE = 'mi-dia-v1.02';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', (e) => {
